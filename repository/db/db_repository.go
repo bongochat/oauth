@@ -27,14 +27,8 @@ type dbRepository struct {
 }
 
 func (r *dbRepository) GetByPhoneNumber(phoneNumber string) (*access_token.AccessToken, *errors.RESTError) {
-	session, err := cassandra.GetSession()
-	if err != nil {
-		panic(err)
-	}
-
-	defer session.Close()
 	var result access_token.AccessToken
-	if err := session.Query(queryGetAccessToken, phoneNumber).Scan(&result.AccessToken, &result.PhoneNumber, &result.ClientID, &result.Expires); err != nil {
+	if err := cassandra.GetSession().Query(queryGetAccessToken, phoneNumber).Scan(&result.AccessToken, &result.PhoneNumber, &result.ClientID, &result.Expires); err != nil {
 		if err == gocql.ErrNotFound {
 			return nil, errors.NewNotFoundError("Access token not found with the given phone number")
 		}
@@ -44,26 +38,14 @@ func (r *dbRepository) GetByPhoneNumber(phoneNumber string) (*access_token.Acces
 }
 
 func (r *dbRepository) Create(at *access_token.AccessToken) *errors.RESTError {
-	session, err := cassandra.GetSession()
-	if err != nil {
-		return errors.NewInternalServerError(err.Error())
-	}
-	defer session.Close()
-
-	if err := session.Query(queryCreateAccessToken, at.AccessToken, at.PhoneNumber, at.ClientID, at.Expires).Exec(); err != nil {
+	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.PhoneNumber, at.ClientID, at.Expires).Exec(); err != nil {
 		return errors.NewInternalServerError(err.Error())
 	}
 	return nil
 }
 
 func (r *dbRepository) UpdateExpirationTime(at *access_token.AccessToken) *errors.RESTError {
-	session, err := cassandra.GetSession()
-	if err != nil {
-		return errors.NewInternalServerError(err.Error())
-	}
-	defer session.Close()
-
-	if err := session.Query(queryUpdateAccessToken, at.Expires, at.AccessToken).Exec(); err != nil {
+	if err := cassandra.GetSession().Query(queryUpdateAccessToken, at.Expires, at.AccessToken).Exec(); err != nil {
 		return errors.NewInternalServerError(err.Error())
 	}
 	return nil
