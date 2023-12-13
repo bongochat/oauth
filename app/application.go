@@ -22,6 +22,7 @@ func StartApplication() {
 	atHandler := http.NewHandler(access_token.NewService(db.NewRepository()))
 
 	router.GET("/oauth/access-token/:access_token", atHandler.GetByPhoneNumber)
+	router.POST("/oauth/access-token/", atHandler.Create)
 
 	router.Run(":8082")
 }

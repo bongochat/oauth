@@ -9,10 +9,14 @@ import (
 
 type Repository interface {
 	GetByPhoneNumber(string) (*AccessToken, *errors.RESTError)
+	Create(*AccessToken) *errors.RESTError
+	UpdateExpirationTime(*AccessToken) *errors.RESTError
 }
 
 type Service interface {
 	GetByPhoneNumber(string) (*AccessToken, *errors.RESTError)
+	Create(*AccessToken) *errors.RESTError
+	UpdateExpirationTime(*AccessToken) *errors.RESTError
 }
 
 type service struct {
@@ -38,4 +42,18 @@ func (s *service) GetByPhoneNumber(accessTokenId string) (*AccessToken, *errors.
 	}
 	log.Println(accessToken, "AT")
 	return accessToken, nil
+}
+
+func (s *service) Create(at *AccessToken) *errors.RESTError {
+	if err := at.Validate(); err != nil {
+		return err
+	}
+	return s.repository.Create(at)
+}
+
+func (s *service) UpdateExpirationTime(at *AccessToken) *errors.RESTError {
+	if err := at.Validate(); err != nil {
+		return err
+	}
+	return s.repository.UpdateExpirationTime(at)
 }
