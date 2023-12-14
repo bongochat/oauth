@@ -2,7 +2,12 @@ module github.com/bongochat/bongochat-oauth
 
 go 1.21.3
 
-require github.com/stretchr/testify v1.8.4
+require (
+	github.com/gin-gonic/gin v1.9.1
+	github.com/gocql/gocql v1.6.0
+	github.com/mercadolibre/golang-restclient v0.0.0-20170701022150-51958130a0a0
+	github.com/stretchr/testify v1.8.4
+)
 
 require (
 	github.com/bytedance/sonic v1.10.2 // indirect
@@ -11,12 +16,10 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.9.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.16.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/gocql/gocql v1.6.0 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
