@@ -3,31 +3,32 @@ package access_token
 import (
 	"fmt"
 	"strings"
-	"time"
 
-	"github.com/bongochat/bongochat-oauth/utils/crypto_utils"
 	"github.com/bongochat/bongochat-oauth/utils/errors"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
-	expirationTime             = 24
 	grantTypePassword          = "password"
 	grantTypeClientCredentials = "client_credentials"
 )
 
 type AccessToken struct {
 	AccessToken string `json:"access_token"`
-	PhoneNumber string `json:"phone_number"`
-	ClientID    int64  `json:"client_id"`
-	Expires     int64  `json:"expires"`
+	UserId      int64  `json:"user_id"`
+	ClientId    int64  `json:"client_id,omitempty"`
 }
 
 type AccessTokenRequest struct {
-	GrantType    string `json:"grant_type"`
-	Scope        string `json:"scope"`
-	PhoneNumber  string `json:"phone_number"`
-	Password     string `json:"password"`
-	ClientID     string `json:"client_id"`
+	GrantType string `json:"grant_type"`
+	Scope     string `json:"scope"`
+
+	// used for password grant type
+	PhoneNumber string `json:"phone_number"`
+	Password    string `json:"password"`
+
+	// user for client_credentials grant type
+	ClientId     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 }
 
@@ -51,17 +52,44 @@ func (at *AccessTokenRequest) Validate() *errors.RESTError {
 	return nil
 }
 
-func GetNewAccessToken(phoneNumber string) AccessToken {
+func GetNewAccessToken(userId int64) AccessToken {
 	return AccessToken{
-		PhoneNumber: phoneNumber,
-		Expires:     time.Now().UTC().Add(expirationTime * time.Hour).Unix(),
+		UserId: userId,
 	}
 }
 
-func (at AccessToken) IsExpired() bool {
-	return time.Unix(at.Expires, 0).Before(time.Now())
+// func (at *AccessToken) Generate() {
+// 	at.AccessToken = crypto_utils.GetMD5(fmt.Sprintf("at-%d-%d-ran", at.PhoneNumber, at.Expires))
+// }
+
+var secretKey = []byte("secret-key")
+
+func (at *AccessToken) Generate() (string, *errors.RESTError) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"user_id": at.UserId,
+		})
+
+	tokenString, err := token.SignedString(secretKey)
+	if err != nil {
+		return "", errors.NewInternalServerError("Token generation failed")
+	}
+
+	return tokenString, nil
 }
 
-func (at *AccessToken) Generate() {
-	at.AccessToken = crypto_utils.GetMD5(fmt.Sprintf("at-%d-%d-ran", at.PhoneNumber, at.Expires))
+func VerifyToken(tokenString string) error {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return secretKey, nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if !token.Valid {
+		return fmt.Errorf("invalid token")
+	}
+
+	return nil
 }

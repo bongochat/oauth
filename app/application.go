@@ -17,7 +17,7 @@ func StartApplication() {
 	router.Use(cors.Default())
 	atHandler := http.NewHandler(access_token.NewService(rest.NewRepository(), db.NewRepository()))
 
-	router.GET("/oauth/access-token/:access_token", atHandler.GetByPhoneNumber)
+	router.GET("/oauth/access-token/:access_token", atHandler.GetById)
 	router.POST("/oauth/access-token/", atHandler.Create)
 
 	router.Run(":8082")

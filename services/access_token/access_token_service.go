@@ -10,9 +10,8 @@ import (
 )
 
 type Service interface {
-	GetByPhoneNumber(string) (*access_token.AccessToken, *errors.RESTError)
+	GetById(string) (*access_token.AccessToken, *errors.RESTError)
 	Create(access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RESTError)
-	UpdateExpirationTime(access_token.AccessToken) *errors.RESTError
 }
 
 type service struct {
@@ -27,12 +26,12 @@ func NewService(usersRepo rest.RESTUsersRepository, dbRepo db.DBRepository) Serv
 	}
 }
 
-func (s *service) GetByPhoneNumber(accessTokenId string) (*access_token.AccessToken, *errors.RESTError) {
+func (s *service) GetById(accessTokenId string) (*access_token.AccessToken, *errors.RESTError) {
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
 		return nil, errors.NewBadRequestError("invalid access token id")
 	}
-	accessToken, err := s.dbRepo.GetByPhoneNumber(accessTokenId)
+	accessToken, err := s.dbRepo.GetById(accessTokenId)
 	if err != nil {
 		return nil, err
 	}
@@ -53,19 +52,16 @@ func (s *service) Create(request access_token.AccessTokenRequest) (*access_token
 	}
 
 	// Generate a new access token:
-	at := access_token.GetNewAccessToken(user.PhoneNumber)
-	at.Generate()
+	at := access_token.GetNewAccessToken(user.Id)
+	token, err := at.Generate()
+	if err != nil {
+		errors.NewInternalServerError("Generate access token failed")
+	}
+	at.AccessToken = token
 
 	// Save the new access token in Cassandra:
 	if err := s.dbRepo.Create(at); err != nil {
 		return nil, err
 	}
 	return &at, nil
-}
-
-func (s *service) UpdateExpirationTime(at access_token.AccessToken) *errors.RESTError {
-	if err := at.Validate(); err != nil {
-		return err
-	}
-	return s.dbRepo.UpdateExpirationTime(at)
 }

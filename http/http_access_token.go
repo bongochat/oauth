@@ -12,7 +12,7 @@ import (
 )
 
 type AccessTokenHandler interface {
-	GetByPhoneNumber(*gin.Context)
+	GetById(*gin.Context)
 	Create(*gin.Context)
 }
 
@@ -26,9 +26,9 @@ func NewHandler(service access_token.Service) AccessTokenHandler {
 	}
 }
 
-func (handler *accessTokenHandler) GetByPhoneNumber(c *gin.Context) {
+func (handler *accessTokenHandler) GetById(c *gin.Context) {
 	accessTokenId := c.Param("access_token")
-	accessToken, err := handler.service.GetByPhoneNumber(accessTokenId)
+	accessToken, err := handler.service.GetById(accessTokenId)
 	log.Println(accessToken, "ACCESS_TOKEN")
 	if err != nil {
 		c.JSON(err.Status, err)
