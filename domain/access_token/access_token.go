@@ -2,6 +2,7 @@ package access_token
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/bongochat/bongochat-oauth/utils/errors"
@@ -80,6 +81,7 @@ func (at *AccessToken) Generate() (string, *errors.RESTError) {
 
 func VerifyToken(tokenString string) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		log.Println(secretKey, "SECRET")
 		return secretKey, nil
 	})
 

@@ -26,6 +26,10 @@ type dbRepository struct {
 
 func (r *dbRepository) GetById(id string) (*access_token.AccessToken, *errors.RESTError) {
 	var result access_token.AccessToken
+	err := access_token.VerifyToken(id)
+	if err != nil {
+		return nil, errors.NewInternalServerError("access token verification failed")
+	}
 	if err := cassandra.GetSession().Query(queryGetAccessToken, id).Scan(&result.AccessToken, &result.UserId, &result.ClientId); err != nil {
 		if err == gocql.ErrNotFound {
 			return nil, errors.NewNotFoundError("Access token not found with the given phone number")
