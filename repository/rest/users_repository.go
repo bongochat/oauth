@@ -2,6 +2,8 @@ package rest
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
 	"time"
 
 	"github.com/bongochat/bongochat-oauth/domain/users"
@@ -11,7 +13,7 @@ import (
 
 var (
 	usersRESTClient = rest.RequestBuilder{
-		BaseURL: "https://api.users.bongo.chat",
+		BaseURL: "http://127.0.0.1:8002",
 		Timeout: 100 * time.Millisecond,
 	}
 )
@@ -31,13 +33,15 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 		PhoneNumber: phone_number,
 		Password:    password,
 	}
+	log.Println(usersRESTClient, "REST CLIENT", request)
 
 	response := usersRESTClient.Post("/users/login/", request)
+	log.Println(response, "response", response.Response)
 	if response == nil || response.Response == nil {
 		return nil, errors.NewInternalServerError("Invalid rest client response")
 	}
 
-	if response.StatusCode > 299 {
+	if response.StatusCode != http.StatusOK {
 		var restErr errors.RESTError
 		err := json.Unmarshal(response.Bytes(), &restErr)
 		if err != nil {

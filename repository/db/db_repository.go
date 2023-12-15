@@ -19,8 +19,8 @@ func NewRepository() DBRepository {
 
 type DBRepository interface {
 	GetByPhoneNumber(string) (*access_token.AccessToken, *errors.RESTError)
-	Create(*access_token.AccessToken) *errors.RESTError
-	UpdateExpirationTime(*access_token.AccessToken) *errors.RESTError
+	Create(access_token.AccessToken) *errors.RESTError
+	UpdateExpirationTime(access_token.AccessToken) *errors.RESTError
 }
 
 type dbRepository struct {
@@ -37,14 +37,14 @@ func (r *dbRepository) GetByPhoneNumber(phoneNumber string) (*access_token.Acces
 	return &result, nil
 }
 
-func (r *dbRepository) Create(at *access_token.AccessToken) *errors.RESTError {
+func (r *dbRepository) Create(at access_token.AccessToken) *errors.RESTError {
 	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.PhoneNumber, at.ClientID, at.Expires).Exec(); err != nil {
 		return errors.NewInternalServerError(err.Error())
 	}
 	return nil
 }
 
-func (r *dbRepository) UpdateExpirationTime(at *access_token.AccessToken) *errors.RESTError {
+func (r *dbRepository) UpdateExpirationTime(at access_token.AccessToken) *errors.RESTError {
 	if err := cassandra.GetSession().Query(queryUpdateAccessToken, at.Expires, at.AccessToken).Exec(); err != nil {
 		return errors.NewInternalServerError(err.Error())
 	}

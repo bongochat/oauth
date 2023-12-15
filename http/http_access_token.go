@@ -3,9 +3,10 @@ package http
 import (
 	"net/http"
 
-	"github.com/bongochat/bongochat-oauth/domain/access_token"
-
+	atDomain "github.com/bongochat/bongochat-oauth/domain/access_token"
+	"github.com/bongochat/bongochat-oauth/services/access_token"
 	"github.com/bongochat/bongochat-oauth/utils/errors"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,24 +27,26 @@ func NewHandler(service access_token.Service) AccessTokenHandler {
 
 func (handler *accessTokenHandler) GetByPhoneNumber(c *gin.Context) {
 	accessTokenId := c.Param("access_token")
-	accessToken, err := handler.service.GetByPhoneNumber(accessTokenId)
-	if err != nil {
-		c.JSON(err.Status, err)
-		return
-	}
+	accessToken, _ := handler.service.GetByPhoneNumber(accessTokenId)
+	// if err != nil {
+	// 	c.JSON(err.Status, err)
+	// 	return
+	// }
 	c.JSON(http.StatusOK, accessToken)
 }
 
 func (handler *accessTokenHandler) Create(c *gin.Context) {
-	var at access_token.AccessToken
-	if err := c.ShouldBindJSON(&at); err != nil {
-		restErr := errors.NewBadRequestError("Invalid json body")
+	var request atDomain.AccessTokenRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		restErr := errors.NewBadRequestError("invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}
-	if err := handler.service.Create(&at); err != nil {
+
+	accessToken, err := handler.service.Create(request)
+	if err != nil {
 		c.JSON(err.Status, err)
 		return
 	}
-	c.JSON(http.StatusCreated, at)
+	c.JSON(http.StatusCreated, accessToken)
 }
