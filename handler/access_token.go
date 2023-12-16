@@ -26,7 +26,9 @@ func NewHandler(service access_token.Service) AccessTokenHandler {
 }
 
 func (handler *accessTokenHandler) GetById(c *gin.Context) {
-	accessTokenId := c.Param("access_token")
+	// accessTokenId := c.Param("access_token")
+	accessTokenString := c.Request.Header.Get("Authorization")
+	accessTokenId := accessTokenString[len("Bearer "):]
 	accessToken, err := handler.service.GetById(accessTokenId)
 	if err != nil {
 		c.JSON(err.Status, err)

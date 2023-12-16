@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	queryGetAccessToken    = "SELECT access_token, user_id, client_id FROM access_tokens WHERE access_token=?;"
+	queryGetAccessToken    = "SELECT access_token, user_id, client_id, created_at FROM access_tokens WHERE access_token=?;"
 	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id, created_at) VALUES(?, ?, ?, ?);"
 )
 
@@ -30,7 +30,7 @@ func (r *dbRepository) GetById(id string) (*access_token.AccessToken, *errors.RE
 	if err != nil {
 		return nil, errors.NewInternalServerError("access token verification failed")
 	}
-	if err := cassandra.GetSession().Query(queryGetAccessToken, id).Scan(&result.AccessToken, &result.UserId, &result.ClientId); err != nil {
+	if err := cassandra.GetSession().Query(queryGetAccessToken, id).Scan(&result.AccessToken, &result.UserId, &result.ClientId, &result.DateCreated); err != nil {
 		if err == gocql.ErrNotFound {
 			return nil, errors.NewNotFoundError("Access token not found with the given phone number")
 		}
