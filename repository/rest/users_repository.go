@@ -6,14 +6,16 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/bongochat/bongochat-oauth/config"
 	"github.com/bongochat/bongochat-oauth/domain/users"
 	"github.com/bongochat/bongochat-oauth/utils/errors"
 	"github.com/mercadolibre/golang-restclient/rest"
 )
 
 var (
+	conf            = config.GetConfig()
 	usersRESTClient = rest.RequestBuilder{
-		BaseURL: "http://127.0.0.1:8002",
+		BaseURL: conf.UserAPIURL,
 		Timeout: 100 * time.Millisecond,
 	}
 )
@@ -33,10 +35,9 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 		PhoneNumber: phone_number,
 		Password:    password,
 	}
-	log.Println(usersRESTClient, "REST CLIENT", request)
 
 	response := usersRESTClient.Post("/users/login/", request)
-	log.Println(response, "response", response.Response)
+	log.Println(response, conf.UserAPIURL)
 	if response == nil || response.Response == nil {
 		return nil, errors.NewInternalServerError("Invalid rest client response")
 	}

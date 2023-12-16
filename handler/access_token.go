@@ -1,7 +1,6 @@
-package http
+package handler
 
 import (
-	"log"
 	"net/http"
 
 	atDomain "github.com/bongochat/bongochat-oauth/domain/access_token"
@@ -29,7 +28,6 @@ func NewHandler(service access_token.Service) AccessTokenHandler {
 func (handler *accessTokenHandler) GetById(c *gin.Context) {
 	accessTokenId := c.Param("access_token")
 	accessToken, err := handler.service.GetById(accessTokenId)
-	log.Println(accessToken, "ACCESS_TOKEN")
 	if err != nil {
 		c.JSON(err.Status, err)
 		return

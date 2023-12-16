@@ -1,7 +1,10 @@
 package app
 
 import (
-	"github.com/bongochat/bongochat-oauth/http"
+	"net/http"
+
+	"github.com/bongochat/bongochat-oauth/config"
+	"github.com/bongochat/bongochat-oauth/handler"
 	"github.com/bongochat/bongochat-oauth/repository/db"
 	"github.com/bongochat/bongochat-oauth/repository/rest"
 	"github.com/bongochat/bongochat-oauth/services/access_token"
@@ -11,14 +14,24 @@ import (
 
 var (
 	router = gin.Default()
+	conf   = config.GetConfig()
 )
 
 func StartApplication() {
 	router.Use(cors.Default())
-	atHandler := http.NewHandler(access_token.NewService(rest.NewRepository(), db.NewRepository()))
+	atHandler := handler.NewHandler(access_token.NewService(rest.NewRepository(), db.NewRepository()))
 
-	router.GET("/oauth/access-token/:access_token", atHandler.GetById)
-	router.POST("/oauth/access-token/", atHandler.Create)
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "https://bongo.chat")
+	})
+	router.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Connected",
+			"status":  http.StatusOK,
+		})
+	})
 
-	router.Run(":8082")
+	router.GET("/api/oauth/access-token/:access_token/v1/", atHandler.GetById)
+	router.POST("/api/oauth/access-token/v1/", atHandler.Create)
+	router.Run(conf.Port)
 }
