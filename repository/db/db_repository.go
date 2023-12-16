@@ -9,7 +9,7 @@ import (
 
 const (
 	queryGetAccessToken    = "SELECT access_token, user_id, client_id FROM access_tokens WHERE access_token=?;"
-	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id) VALUES(?, ?, ?);"
+	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id, created_at) VALUES(?, ?, ?, ?);"
 )
 
 func NewRepository() DBRepository {
@@ -40,7 +40,7 @@ func (r *dbRepository) GetById(id string) (*access_token.AccessToken, *errors.RE
 }
 
 func (r *dbRepository) Create(at access_token.AccessToken) *errors.RESTError {
-	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.UserId, at.ClientId).Exec(); err != nil {
+	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.UserId, at.ClientId, at.DateCreated).Exec(); err != nil {
 		return errors.NewInternalServerError(err.Error())
 	}
 	return nil

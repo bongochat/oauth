@@ -6,6 +6,7 @@ import (
 	"github.com/bongochat/bongochat-oauth/domain/access_token"
 	"github.com/bongochat/bongochat-oauth/repository/db"
 	"github.com/bongochat/bongochat-oauth/repository/rest"
+	"github.com/bongochat/bongochat-oauth/utils/date_utils"
 	"github.com/bongochat/bongochat-oauth/utils/errors"
 )
 
@@ -58,6 +59,7 @@ func (s *service) Create(request access_token.AccessTokenRequest) (*access_token
 		errors.NewInternalServerError("Generate access token failed")
 	}
 	at.AccessToken = token
+	at.DateCreated = date_utils.GetCurrentDate()
 
 	// Save the new access token in Cassandra:
 	if err := s.dbRepo.Create(at); err != nil {
