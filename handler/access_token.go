@@ -6,13 +6,14 @@ import (
 	atDomain "github.com/bongochat/bongochat-oauth/domain/access_token"
 	"github.com/bongochat/bongochat-oauth/services/access_token"
 	"github.com/bongochat/bongochat-oauth/utils/errors"
+	"github.com/bongochat/bongochat-oauth/utils/resterrors"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AccessTokenHandler interface {
-	GetById(*gin.Context)
-	Create(*gin.Context)
+	VerifyAccessToken(*gin.Context)
+	CreateAccessToken(*gin.Context)
 }
 
 type accessTokenHandler struct {
@@ -25,19 +26,23 @@ func NewHandler(service access_token.Service) AccessTokenHandler {
 	}
 }
 
-func (handler *accessTokenHandler) GetById(c *gin.Context) {
-	// accessTokenId := c.Param("access_token")
+func (handler *accessTokenHandler) VerifyAccessToken(c *gin.Context) {
 	accessTokenString := c.Request.Header.Get("Authorization")
+	if accessTokenString == "" {
+		restErr := resterrors.NewBadRequestError("Invalid header information")
+		c.JSON(http.StatusBadRequest, restErr)
+		return
+	}
 	accessTokenId := accessTokenString[len("Bearer "):]
-	accessToken, err := handler.service.GetById(accessTokenId)
+	accessToken, err := handler.service.VerifyToken(accessTokenId)
 	if err != nil {
-		c.JSON(err.Status, err)
+		c.JSON(err.Status(), err)
 		return
 	}
 	c.JSON(http.StatusOK, accessToken)
 }
 
-func (handler *accessTokenHandler) Create(c *gin.Context) {
+func (handler *accessTokenHandler) CreateAccessToken(c *gin.Context) {
 	var request atDomain.AccessTokenRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		restErr := errors.NewBadRequestError("invalid json body")
@@ -45,7 +50,7 @@ func (handler *accessTokenHandler) Create(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := handler.service.Create(request)
+	accessToken, err := handler.service.CreateToken(request)
 	if err != nil {
 		c.JSON(err.Status, err)
 		return

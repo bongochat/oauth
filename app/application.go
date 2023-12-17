@@ -31,7 +31,8 @@ func StartApplication() {
 		})
 	})
 
-	router.GET("/api/oauth/access-token/v1/", atHandler.GetById)
-	router.POST("/api/oauth/access-token/v1/", atHandler.Create)
+	router.POST("/api/oauth/access-token/v1/", atHandler.CreateAccessToken)
+	router.GET("/api/oauth/verify-token/v1/", atHandler.VerifyAccessToken)
+
 	router.Run(conf.Port)
 }

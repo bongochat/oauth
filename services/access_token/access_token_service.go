@@ -8,11 +8,12 @@ import (
 	"github.com/bongochat/bongochat-oauth/repository/rest"
 	"github.com/bongochat/bongochat-oauth/utils/date_utils"
 	"github.com/bongochat/bongochat-oauth/utils/errors"
+	"github.com/bongochat/bongochat-oauth/utils/resterrors"
 )
 
 type Service interface {
-	GetById(string) (*access_token.AccessToken, *errors.RESTError)
-	Create(access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RESTError)
+	VerifyToken(string) (*access_token.AccessToken, resterrors.RestError)
+	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RESTError)
 }
 
 type service struct {
@@ -27,19 +28,19 @@ func NewService(usersRepo rest.RESTUsersRepository, dbRepo db.DBRepository) Serv
 	}
 }
 
-func (s *service) GetById(accessTokenId string) (*access_token.AccessToken, *errors.RESTError) {
+func (s *service) VerifyToken(accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
-		return nil, errors.NewBadRequestError("invalid access token id")
+		return nil, resterrors.NewUnauthorizedError("Access token is required")
 	}
-	accessToken, err := s.dbRepo.GetById(accessTokenId)
+	accessToken, err := s.dbRepo.VerifyToken(accessTokenId)
 	if err != nil {
-		return nil, err
+		return nil, resterrors.NewUnauthorizedError("Invalid access token")
 	}
 	return accessToken, nil
 }
 
-func (s *service) Create(request access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RESTError) {
+func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RESTError) {
 	if err := request.Validate(); err != nil {
 		return nil, err
 	}
@@ -62,7 +63,7 @@ func (s *service) Create(request access_token.AccessTokenRequest) (*access_token
 	at.DateCreated = date_utils.GetCurrentDate()
 
 	// Save the new access token in Cassandra:
-	if err := s.dbRepo.Create(at); err != nil {
+	if err := s.dbRepo.CreateToken(at); err != nil {
 		return nil, err
 	}
 	return &at, nil

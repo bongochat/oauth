@@ -93,6 +93,7 @@ func VerifyToken(tokenString string) error {
 	if !token.Valid {
 		return fmt.Errorf("invalid token")
 	}
+	log.Println(token)
 
 	return nil
 }
