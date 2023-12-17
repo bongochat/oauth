@@ -39,7 +39,7 @@ func (e restErr) Causes() []interface{} {
 }
 
 func NewRestError(message string, status int, err string, causes []interface{}) RestError {
-	return restErr{
+	return &restErr{
 		ErrMessage: message,
 		ErrStatus:  status,
 		ErrError:   err,
@@ -56,7 +56,7 @@ func NewRestErrorFromBytes(bytes []byte) (RestError, error) {
 }
 
 func NewBadRequestError(message string) RestError {
-	return &restErr{
+	return restErr{
 		ErrMessage: message,
 		ErrStatus:  http.StatusBadRequest,
 		ErrError:   "bad_request",
@@ -72,7 +72,7 @@ func NewNotFoundError(message string) RestError {
 }
 
 func NewUnauthorizedError(message string) RestError {
-	return &restErr{
+	return restErr{
 		ErrMessage: message,
 		ErrStatus:  http.StatusUnauthorized,
 		ErrError:   "unauthorized",

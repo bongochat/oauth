@@ -5,7 +5,6 @@ import (
 
 	atDomain "github.com/bongochat/bongochat-oauth/domain/access_token"
 	"github.com/bongochat/bongochat-oauth/services/access_token"
-	"github.com/bongochat/bongochat-oauth/utils/errors"
 	"github.com/bongochat/bongochat-oauth/utils/resterrors"
 
 	"github.com/gin-gonic/gin"
@@ -45,14 +44,14 @@ func (handler *accessTokenHandler) VerifyAccessToken(c *gin.Context) {
 func (handler *accessTokenHandler) CreateAccessToken(c *gin.Context) {
 	var request atDomain.AccessTokenRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		restErr := errors.NewBadRequestError("invalid json body")
-		c.JSON(restErr.Status, restErr)
+		restErr := resterrors.NewBadRequestError("Invalid request")
+		c.JSON(restErr.Status(), restErr)
 		return
 	}
 
 	accessToken, err := handler.service.CreateToken(request)
 	if err != nil {
-		c.JSON(err.Status, err)
+		c.JSON(err.Status(), err)
 		return
 	}
 	c.JSON(http.StatusCreated, accessToken)

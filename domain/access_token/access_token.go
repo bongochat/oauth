@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/bongochat/bongochat-oauth/utils/errors"
+	"github.com/bongochat/bongochat-oauth/utils/resterrors"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -34,22 +34,22 @@ type AccessTokenRequest struct {
 	ClientSecret string `json:"client_secret"`
 }
 
-func (at *AccessToken) Validate() *errors.RESTError {
+func (at *AccessToken) Validate() resterrors.RestError {
 	at.AccessToken = strings.TrimSpace(at.AccessToken)
 	if at.AccessToken == "" {
-		return errors.NewBadRequestError("Invalid access token Id")
+		return resterrors.NewBadRequestError("Invalid access token")
 	}
 	return nil
 }
 
-func (at *AccessTokenRequest) Validate() *errors.RESTError {
+func (at *AccessTokenRequest) Validate() resterrors.RestError {
 	switch at.GrantType {
 	case grantTypePassword:
 		break
 	case grantTypeClientCredentials:
 		break
 	default:
-		return errors.NewBadRequestError("Invalid grant type")
+		return resterrors.NewBadRequestError("Invalid grant type")
 	}
 	return nil
 }
@@ -66,7 +66,7 @@ func GetNewAccessToken(userId int64) AccessToken {
 
 var secretKey = []byte("secret-key")
 
-func (at *AccessToken) Generate() (string, *errors.RESTError) {
+func (at *AccessToken) Generate() (string, resterrors.RestError) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"user_id": at.UserId,
@@ -74,7 +74,7 @@ func (at *AccessToken) Generate() (string, *errors.RESTError) {
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
-		return "", errors.NewInternalServerError("Token generation failed")
+		return "", resterrors.NewInternalServerError("Token generation failed", err)
 	}
 
 	return tokenString, nil

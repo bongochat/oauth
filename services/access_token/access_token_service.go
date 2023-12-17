@@ -7,13 +7,12 @@ import (
 	"github.com/bongochat/bongochat-oauth/repository/db"
 	"github.com/bongochat/bongochat-oauth/repository/rest"
 	"github.com/bongochat/bongochat-oauth/utils/date_utils"
-	"github.com/bongochat/bongochat-oauth/utils/errors"
 	"github.com/bongochat/bongochat-oauth/utils/resterrors"
 )
 
 type Service interface {
 	VerifyToken(string) (*access_token.AccessToken, resterrors.RestError)
-	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RESTError)
+	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError)
 }
 
 type service struct {
@@ -40,7 +39,7 @@ func (s *service) VerifyToken(accessTokenId string) (*access_token.AccessToken, 
 	return accessToken, nil
 }
 
-func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RESTError) {
+func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError) {
 	if err := request.Validate(); err != nil {
 		return nil, err
 	}
@@ -55,10 +54,7 @@ func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_
 
 	// Generate a new access token:
 	at := access_token.GetNewAccessToken(user.Id)
-	token, err := at.Generate()
-	if err != nil {
-		errors.NewInternalServerError("Generate access token failed")
-	}
+	token, _ := at.Generate()
 	at.AccessToken = token
 	at.DateCreated = date_utils.GetCurrentDate()
 
