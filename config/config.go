@@ -7,10 +7,11 @@ import (
 )
 
 type Config struct {
-	Port       string
-	Host       string
-	Keyspace   string
-	UserAPIURL string
+	Port            string
+	Host            string
+	Keyspace        string
+	UserAPIBaseURL  string
+	UserLoginAPIURL string
 }
 
 var conf Config

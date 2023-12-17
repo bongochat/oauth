@@ -2,7 +2,6 @@ package rest
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -15,7 +14,7 @@ import (
 var (
 	conf            = config.GetConfig()
 	usersRESTClient = rest.RequestBuilder{
-		BaseURL: conf.UserAPIURL,
+		BaseURL: conf.UserAPIBaseURL,
 		Timeout: 100 * time.Millisecond,
 	}
 )
@@ -36,8 +35,7 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 		Password:    password,
 	}
 
-	response := usersRESTClient.Post("/api/users/login/", request)
-	log.Println(response, conf.UserAPIURL)
+	response := usersRESTClient.Post(conf.UserLoginAPIURL, request)
 	if response == nil || response.Response == nil {
 		return nil, resterrors.NewInternalServerError("Invalid client response", nil)
 	}
