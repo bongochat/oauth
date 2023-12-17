@@ -36,7 +36,7 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 		Password:    password,
 	}
 
-	response := usersRESTClient.Post("/users/login/", request)
+	response := usersRESTClient.Post("/api/users/login/", request)
 	log.Println(response, conf.UserAPIURL)
 	if response == nil || response.Response == nil {
 		return nil, errors.NewInternalServerError("Invalid rest client response")
