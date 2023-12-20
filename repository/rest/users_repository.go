@@ -41,12 +41,11 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 	}
 
 	if response.StatusCode != http.StatusOK {
-		var restErr resterrors.RestError
-		err := json.Unmarshal(response.Bytes(), &restErr)
+		apiErr, err := resterrors.NewRestErrorFromBytes(response.Bytes())
 		if err != nil {
 			return nil, resterrors.NewInternalServerError("Invalid rest client error interface", err)
 		}
-		return nil, restErr
+		return nil, apiErr
 	}
 
 	var user users.User
