@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/bongochat/bongochat-oauth/domain/users"
-	"github.com/bongochat/bongochat-oauth/logger"
-	"github.com/bongochat/bongochat-oauth/utils/resterrors"
+	"github.com/bongochat/utils/logger"
+	"github.com/bongochat/utils/resterrors"
 	"github.com/mercadolibre/golang-restclient/rest"
 )
 

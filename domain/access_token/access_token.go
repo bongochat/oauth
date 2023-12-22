@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
-	"github.com/bongochat/bongochat-oauth/utils/resterrors"
+	"github.com/bongochat/utils/resterrors"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -15,10 +16,10 @@ const (
 )
 
 type AccessToken struct {
-	AccessToken string `json:"access_token"`
-	UserId      int64  `json:"user_id"`
-	ClientId    int64  `json:"client_id,omitempty"`
-	DateCreated string `json:"date_created"`
+	AccessToken string    `json:"access_token"`
+	UserId      int64     `json:"user_id"`
+	ClientId    int64     `json:"client_id,omitempty"`
+	DateCreated time.Time `json:"date_created"`
 }
 
 type AccessTokenRequest struct {
@@ -59,10 +60,6 @@ func GetNewAccessToken(userId int64) AccessToken {
 		UserId: userId,
 	}
 }
-
-// func (at *AccessToken) Generate() {
-// 	at.AccessToken = crypto_utils.GetMD5(fmt.Sprintf("at-%d-%d-ran", at.PhoneNumber, at.Expires))
-// }
 
 var secretKey = []byte("secret-key")
 

@@ -5,7 +5,7 @@ import (
 
 	atDomain "github.com/bongochat/bongochat-oauth/domain/access_token"
 	"github.com/bongochat/bongochat-oauth/services/access_token"
-	"github.com/bongochat/bongochat-oauth/utils/resterrors"
+	"github.com/bongochat/utils/resterrors"
 
 	"github.com/gin-gonic/gin"
 )

@@ -2,12 +2,12 @@ package access_token
 
 import (
 	"strings"
+	"time"
 
 	"github.com/bongochat/bongochat-oauth/domain/access_token"
 	"github.com/bongochat/bongochat-oauth/repository/db"
 	"github.com/bongochat/bongochat-oauth/repository/rest"
-	"github.com/bongochat/bongochat-oauth/utils/date_utils"
-	"github.com/bongochat/bongochat-oauth/utils/resterrors"
+	"github.com/bongochat/utils/resterrors"
 )
 
 type Service interface {
@@ -56,7 +56,7 @@ func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_
 	at := access_token.GetNewAccessToken(user.Id)
 	token, _ := at.Generate()
 	at.AccessToken = token
-	at.DateCreated = date_utils.GetCurrentDate()
+	at.DateCreated = time.Now()
 
 	// Save the new access token in Cassandra:
 	if err := s.dbRepo.CreateToken(at); err != nil {
