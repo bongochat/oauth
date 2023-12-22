@@ -1,9 +1,9 @@
-package app
+package routers
 
 import (
 	"net/http"
+	"os"
 
-	"github.com/bongochat/bongochat-oauth/config"
 	"github.com/bongochat/bongochat-oauth/handler"
 	"github.com/bongochat/bongochat-oauth/repository/db"
 	"github.com/bongochat/bongochat-oauth/repository/rest"
@@ -14,10 +14,9 @@ import (
 
 var (
 	router = gin.Default()
-	conf   = config.GetConfig()
 )
 
-func StartApplication() {
+func APIUrls() {
 	router.Use(cors.Default())
 	atHandler := handler.NewHandler(access_token.NewService(rest.NewRepository(), db.NewRepository()))
 
@@ -34,5 +33,6 @@ func StartApplication() {
 	router.POST("/api/oauth/access-token/v1/", atHandler.CreateAccessToken)
 	router.GET("/api/oauth/verify-token/v1/", atHandler.VerifyAccessToken)
 
-	router.Run(conf.Port)
+	// run routes with port
+	router.Run(os.Getenv("GO_PORT"))
 }

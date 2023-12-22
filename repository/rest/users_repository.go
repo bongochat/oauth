@@ -3,9 +3,9 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
-	"github.com/bongochat/bongochat-oauth/config"
 	"github.com/bongochat/bongochat-oauth/domain/users"
 	"github.com/bongochat/bongochat-oauth/logger"
 	"github.com/bongochat/bongochat-oauth/utils/resterrors"
@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	conf            = config.GetConfig()
+	userHostUrl     = os.Getenv("USER_HOST_URL")
+	userLoginApiUrl = os.Getenv("USER_LOGIN_API_URL")
 	usersRESTClient = rest.RequestBuilder{
-		BaseURL: conf.UserAPIBaseURL,
+		BaseURL: userHostUrl,
 		Timeout: 100 * time.Millisecond,
 	}
 )
@@ -36,7 +37,7 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 		Password:    password,
 	}
 
-	response := usersRESTClient.Post(conf.UserLoginAPIURL, request)
+	response := usersRESTClient.Post(userLoginApiUrl, request)
 	if response == nil || response.Response == nil {
 		logger.Error("Invalid response from user login", response.Err)
 		return nil, resterrors.NewInternalServerError("Invalid client response", nil)

@@ -1,5 +1,0 @@
-port=":8083"
-
-host="localhost"
-keyspace="oauth"
-UserAPIURL="http://127.0.0.1:8002"
