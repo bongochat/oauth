@@ -7,6 +7,7 @@ import (
 
 	"github.com/bongochat/bongochat-oauth/config"
 	"github.com/bongochat/bongochat-oauth/domain/users"
+	"github.com/bongochat/bongochat-oauth/logger"
 	"github.com/bongochat/bongochat-oauth/utils/resterrors"
 	"github.com/mercadolibre/golang-restclient/rest"
 )
@@ -37,6 +38,7 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 
 	response := usersRESTClient.Post(conf.UserLoginAPIURL, request)
 	if response == nil || response.Response == nil {
+		logger.Error("Invalid response from user login", response.Err)
 		return nil, resterrors.NewInternalServerError("Invalid client response", nil)
 	}
 
