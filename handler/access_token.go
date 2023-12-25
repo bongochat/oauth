@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	atDomain "github.com/bongochat/bongochat-oauth/domain/access_token"
 	"github.com/bongochat/bongochat-oauth/services/access_token"
@@ -25,6 +26,14 @@ func NewHandler(service access_token.Service) AccessTokenHandler {
 	}
 }
 
+func getUserId(userIdParam string) (int64, resterrors.RestError) {
+	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
+	if userErr != nil {
+		return 0, resterrors.NewBadRequestError("user id should be a number")
+	}
+	return userId, nil
+}
+
 func (handler *accessTokenHandler) VerifyAccessToken(c *gin.Context) {
 	accessTokenString := c.Request.Header.Get("Authorization")
 	if accessTokenString == "" {
@@ -32,8 +41,13 @@ func (handler *accessTokenHandler) VerifyAccessToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, restErr)
 		return
 	}
+	userId, userIdErr := getUserId(c.Param("user_id"))
+	if userIdErr != nil {
+		c.JSON(userIdErr.Status(), userIdErr)
+		return
+	}
 	accessTokenId := accessTokenString[len("Bearer "):]
-	accessToken, err := handler.service.VerifyToken(accessTokenId)
+	accessToken, err := handler.service.VerifyToken(userId, accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		return

@@ -1,8 +1,6 @@
 package db
 
 import (
-	"log"
-
 	"github.com/bongochat/bongochat-oauth/clients/cassandra"
 	"github.com/bongochat/bongochat-oauth/domain/access_token"
 	"github.com/bongochat/utils/resterrors"
@@ -19,18 +17,16 @@ func NewRepository() DBRepository {
 }
 
 type DBRepository interface {
-	VerifyToken(string) (*access_token.AccessToken, resterrors.RestError)
+	VerifyToken(int64, string) (*access_token.AccessToken, resterrors.RestError)
 	CreateToken(access_token.AccessToken) resterrors.RestError
 }
 
 type dbRepository struct {
 }
 
-func (r *dbRepository) VerifyToken(token string) (*access_token.AccessToken, resterrors.RestError) {
+func (r *dbRepository) VerifyToken(userId int64, token string) (*access_token.AccessToken, resterrors.RestError) {
 	var result access_token.AccessToken
-	log.Println(token, "GET TOKEN")
 	err := access_token.VerifyToken(token)
-	log.Println(err)
 	if err != nil {
 		return nil, resterrors.NewInternalServerError("Invalid access token", err)
 	}
@@ -40,7 +36,9 @@ func (r *dbRepository) VerifyToken(token string) (*access_token.AccessToken, res
 		}
 		return nil, resterrors.NewInternalServerError("Database error", err)
 	}
-	log.Println(result)
+	if userId != result.UserId {
+		return nil, resterrors.NewUnauthorizedError("Access token not matching with the given user")
+	}
 	return &result, nil
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 type Service interface {
-	VerifyToken(string) (*access_token.AccessToken, resterrors.RestError)
+	VerifyToken(int64, string) (*access_token.AccessToken, resterrors.RestError)
 	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError)
 }
 
@@ -27,14 +27,14 @@ func NewService(usersRepo rest.RESTUsersRepository, dbRepo db.DBRepository) Serv
 	}
 }
 
-func (s *service) VerifyToken(accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
+func (s *service) VerifyToken(userId int64, accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
 		return nil, resterrors.NewUnauthorizedError("Access token is required")
 	}
-	accessToken, err := s.dbRepo.VerifyToken(accessTokenId)
+	accessToken, err := s.dbRepo.VerifyToken(userId, accessTokenId)
 	if err != nil {
-		return nil, resterrors.NewUnauthorizedError("Invalid access token")
+		return nil, err
 	}
 	return accessToken, nil
 }
