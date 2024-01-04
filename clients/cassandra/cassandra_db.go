@@ -1,9 +1,11 @@
 package cassandra
 
 import (
+	"crypto/tls"
 	"log"
 	"os"
 
+	"github.com/aws/aws-sigv4-auth-cassandra-gocql-driver-plugin/sigv4"
 	"github.com/gocql/gocql"
 	"github.com/joho/godotenv"
 )
@@ -20,11 +22,25 @@ func init() {
 
 	host := os.Getenv("DB_HOST")
 	keyspace := os.Getenv("KEYSPACE")
+	access_key := os.Getenv("AWS_ACCESS_KEY_ID")
+	secret_key := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	region := os.Getenv("AWS_REGION")
 
-	log.Println(host, keyspace)
 	cluster := gocql.NewCluster(host)
+	cluster.Port = 9142
 	cluster.Keyspace = keyspace
-	cluster.Consistency = gocql.Quorum
+	cluster.Consistency = gocql.LocalQuorum
+
+	var auth sigv4.AwsAuthenticator = sigv4.NewAwsAuthenticator()
+	auth.Region = region
+	auth.AccessKeyId = access_key
+	auth.SecretAccessKey = secret_key
+
+	cluster.ProtoVersion = 4
+	cluster.SslOpts = &gocql.SslOptions{Config: &tls.Config{ServerName: host, InsecureSkipVerify: true}}
+
+	cluster.Authenticator = auth
+	cluster.DisableInitialHostLookup = false
 
 	if session, err = cluster.CreateSession(); err != nil {
 		panic(err)
