@@ -2,10 +2,12 @@ package rest
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/bongochat/bongochat-oauth/domain/users"
+	"github.com/bongochat/utils/logger"
 	"github.com/bongochat/utils/resterrors"
 	"github.com/go-resty/resty/v2"
 )
@@ -44,9 +46,12 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 	if response == nil {
 		return nil, resterrors.NewInternalServerError("Invalid client response", nil)
 	}
+	logger.Info(fmt.Sprintf("RESP", response))
 
 	if response.StatusCode() != http.StatusOK {
 		apiErr, err := resterrors.NewRestErrorFromBytes(response.Body())
+		logger.Error("Invalid error interface response", apiErr)
+		logger.Error("Invalid error interface", err)
 		if err != nil {
 			return nil, resterrors.NewInternalServerError("Invalid rest client error interface", err)
 		}
