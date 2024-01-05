@@ -18,7 +18,7 @@ var (
 
 func APIUrls() {
 	corsconfig := cors.DefaultConfig()
-	corsconfig.AllowOrigins = []string{"https://oauth.bongo.chat", "https://users.bongo.chat"}
+	corsconfig.AllowOrigins = []string{"*.bongo.chat"}
 	corsconfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
 
 	router.Use(cors.New(corsconfig))
