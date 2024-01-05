@@ -17,7 +17,11 @@ var (
 )
 
 func APIUrls() {
-	router.Use(cors.Default())
+	corsconfig := cors.DefaultConfig()
+	corsconfig.AllowOrigins = []string{"https://users.bongo.chat"}
+	corsconfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
+
+	router.Use(cors.New(corsconfig))
 	atHandler := handler.NewHandler(access_token.NewService(rest.NewRepository(), db.NewRepository()))
 
 	router.GET("/", func(c *gin.Context) {
