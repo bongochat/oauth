@@ -3,6 +3,7 @@ package routers
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/bongochat/bongochat-oauth/handler"
 	"github.com/bongochat/bongochat-oauth/repository/db"
@@ -18,8 +19,12 @@ var (
 
 func APIUrls() {
 	corsconfig := cors.DefaultConfig()
-	corsconfig.AllowOrigins = []string{"*.bongo.chat"}
+	corsconfig.AllowOrigins = []string{"https://users.bongo.chat"}
 	corsconfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
+	corsconfig.AllowHeaders = []string{"Origin"}
+	corsconfig.AllowCredentials = true
+	corsconfig.ExposeHeaders = []string{"Authorization", "Content-Length"}
+	corsconfig.MaxAge = 12 * time.Hour
 
 	router.Use(cors.New(corsconfig))
 	atHandler := handler.NewHandler(access_token.NewService(rest.NewRepository(), db.NewRepository()))
