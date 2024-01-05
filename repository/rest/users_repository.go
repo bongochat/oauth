@@ -4,21 +4,16 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/bongochat/bongochat-oauth/domain/users"
-	"github.com/bongochat/utils/logger"
 	"github.com/bongochat/utils/resterrors"
-	"github.com/mercadolibre/golang-restclient/rest"
+	"github.com/go-resty/resty/v2"
 )
 
 var (
 	userHostUrl     = os.Getenv("USER_HOST_URL")
 	userLoginApiUrl = os.Getenv("USER_LOGIN_API_URL")
-	usersRESTClient = rest.RequestBuilder{
-		BaseURL: userHostUrl,
-		Timeout: 100 * time.Millisecond,
-	}
+	userClient      = resty.New().SetBaseURL(userHostUrl)
 )
 
 type RESTUsersRepository interface {
@@ -37,14 +32,21 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 		Password:    password,
 	}
 
-	response := usersRESTClient.Post(userLoginApiUrl, request)
-	if response == nil || response.Response == nil {
-		logger.Error("Invalid response from user login", response.Err)
+	response, err := userClient.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(request).
+		Post(userLoginApiUrl)
+
+	if err != nil {
+		return nil, resterrors.NewInternalServerError("Could not login", err)
+	}
+
+	if response == nil {
 		return nil, resterrors.NewInternalServerError("Invalid client response", nil)
 	}
 
-	if response.StatusCode != http.StatusOK {
-		apiErr, err := resterrors.NewRestErrorFromBytes(response.Bytes())
+	if response.StatusCode() != http.StatusOK {
+		apiErr, err := resterrors.NewRestErrorFromBytes(response.Body())
 		if err != nil {
 			return nil, resterrors.NewInternalServerError("Invalid rest client error interface", err)
 		}
@@ -52,7 +54,7 @@ func (r *usersRepository) LoginUser(phone_number string, password string) (*user
 	}
 
 	var user users.User
-	if err := json.Unmarshal(response.Bytes(), &user); err != nil {
+	if err := json.Unmarshal(response.Body(), &user); err != nil {
 		return nil, resterrors.NewInternalServerError("error unmarshalling", err)
 	}
 	return &user, nil
