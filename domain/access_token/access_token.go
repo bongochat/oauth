@@ -2,7 +2,6 @@ package access_token
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -38,7 +37,7 @@ type AccessTokenRequest struct {
 func (at *AccessToken) Validate() resterrors.RestError {
 	at.AccessToken = strings.TrimSpace(at.AccessToken)
 	if at.AccessToken == "" {
-		return resterrors.NewBadRequestError("Invalid access token")
+		return resterrors.NewBadRequestError("Invalid access token", "")
 	}
 	return nil
 }
@@ -50,7 +49,7 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 	case grantTypeClientCredentials:
 		break
 	default:
-		return resterrors.NewBadRequestError("Invalid grant type")
+		return resterrors.NewBadRequestError("Invalid grant type", "")
 	}
 	return nil
 }
@@ -71,7 +70,7 @@ func (at *AccessToken) Generate() (string, resterrors.RestError) {
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
-		return "", resterrors.NewInternalServerError("Token generation failed", err)
+		return "", resterrors.NewInternalServerError("Token generation failed", "", err)
 	}
 
 	return tokenString, nil
@@ -79,7 +78,6 @@ func (at *AccessToken) Generate() (string, resterrors.RestError) {
 
 func VerifyToken(tokenString string) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		log.Println(secretKey, "SECRET")
 		return secretKey, nil
 	})
 
@@ -90,7 +88,6 @@ func VerifyToken(tokenString string) error {
 	if !token.Valid {
 		return fmt.Errorf("invalid token")
 	}
-	log.Println(token)
 
 	return nil
 }

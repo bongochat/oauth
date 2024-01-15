@@ -29,7 +29,7 @@ func NewHandler(service access_token.Service) AccessTokenHandler {
 func getUserId(userIdParam string) (int64, resterrors.RestError) {
 	userId, userErr := strconv.ParseInt(userIdParam, 10, 64)
 	if userErr != nil {
-		return 0, resterrors.NewBadRequestError("user id should be a number")
+		return 0, resterrors.NewBadRequestError("user id should be a number", "")
 	}
 	return userId, nil
 }
@@ -37,7 +37,7 @@ func getUserId(userIdParam string) (int64, resterrors.RestError) {
 func (handler *accessTokenHandler) VerifyAccessToken(c *gin.Context) {
 	accessTokenString := c.Request.Header.Get("Authorization")
 	if accessTokenString == "" {
-		restErr := resterrors.NewBadRequestError("Invalid header information")
+		restErr := resterrors.NewBadRequestError("Invalid header information", "")
 		c.JSON(http.StatusBadRequest, restErr)
 		return
 	}
@@ -52,13 +52,16 @@ func (handler *accessTokenHandler) VerifyAccessToken(c *gin.Context) {
 		c.JSON(err.Status(), err)
 		return
 	}
-	c.JSON(http.StatusOK, accessToken)
+	c.JSON(http.StatusOK, gin.H{
+		"result": accessToken,
+		"status": http.StatusOK,
+	})
 }
 
 func (handler *accessTokenHandler) CreateAccessToken(c *gin.Context) {
 	var request atDomain.AccessTokenRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		restErr := resterrors.NewBadRequestError("Invalid request")
+		restErr := resterrors.NewBadRequestError("Invalid request", "")
 		c.JSON(restErr.Status(), restErr)
 		return
 	}
@@ -68,5 +71,8 @@ func (handler *accessTokenHandler) CreateAccessToken(c *gin.Context) {
 		c.JSON(err.Status(), err)
 		return
 	}
-	c.JSON(http.StatusCreated, accessToken)
+	c.JSON(http.StatusCreated, gin.H{
+		"result": accessToken,
+		"status": http.StatusCreated,
+	})
 }

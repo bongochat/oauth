@@ -13,7 +13,7 @@ require (
 
 require (
 	github.com/aws/aws-sigv4-auth-cassandra-gocql-driver-plugin v0.0.0-20220331165046-e4d000c0d6a6 // indirect
-	github.com/bongochat/utils v0.0.0-20231222184824-d529f1cc270c // indirect
+	github.com/bongochat/utils v0.0.0-20240115094738-5d29cc59e4f9 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect

@@ -30,7 +30,7 @@ func NewService(usersRepo rest.RESTUsersRepository, dbRepo db.DBRepository) Serv
 func (s *service) VerifyToken(userId int64, accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
-		return nil, resterrors.NewUnauthorizedError("Access token is required")
+		return nil, resterrors.NewUnauthorizedError("Access token is required", "")
 	}
 	accessToken, err := s.dbRepo.VerifyToken(userId, accessTokenId)
 	if err != nil {
