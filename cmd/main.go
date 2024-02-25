@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bongochat/bongochat-oauth/routers"
+	"github.com/bongochat/oauth/routers"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )

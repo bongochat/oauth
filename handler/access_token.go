@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	atDomain "github.com/bongochat/bongochat-oauth/domain/access_token"
-	"github.com/bongochat/bongochat-oauth/services/access_token"
+	atDomain "github.com/bongochat/oauth/domain/access_token"
+	"github.com/bongochat/oauth/services/access_token"
 	"github.com/bongochat/utils/resterrors"
 
 	"github.com/gin-gonic/gin"

@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/bongochat/bongochat-oauth/clients/cassandra"
-	"github.com/bongochat/bongochat-oauth/domain/access_token"
+	"github.com/bongochat/oauth/clients/cassandra"
+	"github.com/bongochat/oauth/domain/access_token"
 	"github.com/bongochat/utils/resterrors"
 	"github.com/gocql/gocql"
 )

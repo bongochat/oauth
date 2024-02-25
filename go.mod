@@ -1,4 +1,4 @@
-module github.com/bongochat/bongochat-oauth
+module github.com/bongochat/oauth
 
 go 1.21.3
 

@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bongochat/bongochat-oauth/domain/access_token"
-	"github.com/bongochat/bongochat-oauth/repository/db"
-	"github.com/bongochat/bongochat-oauth/repository/rest"
+	"github.com/bongochat/oauth/domain/access_token"
+	"github.com/bongochat/oauth/repository/db"
+	"github.com/bongochat/oauth/repository/rest"
 	"github.com/bongochat/utils/resterrors"
 )
 

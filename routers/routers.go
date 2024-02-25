@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/bongochat/bongochat-oauth/handler"
-	"github.com/bongochat/bongochat-oauth/repository/db"
-	"github.com/bongochat/bongochat-oauth/repository/rest"
-	"github.com/bongochat/bongochat-oauth/services/access_token"
+	"github.com/bongochat/oauth/handler"
+	"github.com/bongochat/oauth/repository/db"
+	"github.com/bongochat/oauth/repository/rest"
+	"github.com/bongochat/oauth/services/access_token"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

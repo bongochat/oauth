@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/bongochat/bongochat-oauth/domain/users"
+	"github.com/bongochat/oauth/domain/users"
 	"github.com/bongochat/utils/resterrors"
 	"github.com/go-resty/resty/v2"
 )
