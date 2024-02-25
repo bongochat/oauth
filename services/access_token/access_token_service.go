@@ -13,6 +13,7 @@ import (
 type Service interface {
 	VerifyToken(int64, string) (*access_token.AccessToken, resterrors.RestError)
 	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError)
+	DeleteToken(int64, string) resterrors.RestError
 }
 
 type service struct {
@@ -63,4 +64,20 @@ func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_
 		return nil, err
 	}
 	return &at, nil
+}
+
+func (s *service) DeleteToken(userId int64, accessTokenId string) resterrors.RestError {
+	accessTokenId = strings.TrimSpace(accessTokenId)
+	if len(accessTokenId) == 0 {
+		return resterrors.NewUnauthorizedError("Access token is required", "")
+	}
+	_, err := s.dbRepo.VerifyToken(userId, accessTokenId)
+	if err != nil {
+		return err
+	}
+	err = s.dbRepo.DeleteToken(accessTokenId)
+	if err != nil {
+		return err
+	}
+	return nil
 }

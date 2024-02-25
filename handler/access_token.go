@@ -14,6 +14,7 @@ import (
 type AccessTokenHandler interface {
 	VerifyAccessToken(*gin.Context)
 	CreateAccessToken(*gin.Context)
+	DeleteAccessToken(*gin.Context)
 }
 
 type accessTokenHandler struct {
@@ -74,5 +75,34 @@ func (handler *accessTokenHandler) CreateAccessToken(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"result": accessToken,
 		"status": http.StatusCreated,
+	})
+}
+
+func (handler *accessTokenHandler) DeleteAccessToken(c *gin.Context) {
+	accessTokenString := c.Request.Header.Get("Authorization")
+	if accessTokenString == "" {
+		restErr := resterrors.NewBadRequestError("Invalid header information", "")
+		c.JSON(http.StatusBadRequest, restErr)
+		return
+	}
+	userId, userIdErr := getUserId(c.Param("user_id"))
+	if userIdErr != nil {
+		c.JSON(userIdErr.Status(), userIdErr)
+		return
+	}
+	accessTokenId := accessTokenString[len("Bearer "):]
+	_, err := handler.service.VerifyToken(userId, accessTokenId)
+	if err != nil {
+		c.JSON(err.Status(), err)
+		return
+	}
+	err = handler.service.DeleteToken(userId, accessTokenId)
+	if err != nil {
+		c.JSON(err.Status(), err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Logout successfully.",
+		"status":  http.StatusOK,
 	})
 }
