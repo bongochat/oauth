@@ -1,4 +1,4 @@
-package rest
+package users
 
 import (
 	"encoding/json"
@@ -16,17 +16,7 @@ var (
 	userClient      = resty.New().SetBaseURL(userHostUrl)
 )
 
-type RESTUsersRepository interface {
-	LoginUser(string, string) (*users.User, resterrors.RestError)
-}
-
-type usersRepository struct{}
-
-func NewRepository() RESTUsersRepository {
-	return &usersRepository{}
-}
-
-func (r *usersRepository) LoginUser(phone_number string, password string) (*users.User, resterrors.RestError) {
+func LoginUser(phone_number string, password string) (*users.User, resterrors.RestError) {
 	request := users.UserLoginRequest{
 		PhoneNumber: phone_number,
 		Password:    password,

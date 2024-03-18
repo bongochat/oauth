@@ -5,10 +5,9 @@ import (
 	"os"
 	"time"
 
-	token "github.com/bongochat/oauth/domain/access_token"
-	"github.com/bongochat/oauth/handler"
-	"github.com/bongochat/oauth/repository/rest"
-	"github.com/bongochat/oauth/services/access_token"
+	"github.com/bongochat/oauth/controllers/create_token"
+	"github.com/bongochat/oauth/controllers/verify_token"
+	"github.com/bongochat/oauth/controllers/delete_token"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +26,6 @@ func APIUrls() {
 	corsconfig.MaxAge = 12 * time.Hour
 
 	router.Use(cors.New(corsconfig))
-	atHandler := handler.NewHandler(access_token.NewService(rest.NewRepository(), token.NewRepository()))
 
 	router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "https://bongo.chat")
@@ -40,9 +38,9 @@ func APIUrls() {
 	})
 
 	tokenAPI := router.Group("/api/user")
-	tokenAPI.POST("create-token/v1/", atHandler.CreateAccessToken)
-	tokenAPI.GET(":user_id/verify-token/v1/", atHandler.VerifyAccessToken)
-	tokenAPI.GET(":user_id/logout/v1/", atHandler.DeleteAccessToken)
+	tokenAPI.POST("create-token/v1/", create_token.CreateAccessToken)
+	tokenAPI.GET(":user_id/verify-token/v1/", verify_token.VerifyAccessToken)
+	tokenAPI.GET(":user_id/logout/v1/", delete_token.DeleteAccessToken)
 
 	// run routes with port
 	router.Run(os.Getenv("GO_PORT"))

@@ -1,45 +1,40 @@
-package access_token
+package services
 
 import (
 	"strings"
 	"time"
 
 	"github.com/bongochat/oauth/domain/access_token"
-	"github.com/bongochat/oauth/repository/rest"
+	"github.com/bongochat/oauth/users"
 	"github.com/bongochat/utils/resterrors"
 )
 
-type Service interface {
+var (
+	TokenService tokenServiceInterface = &tokenService{}
+)
+
+type tokenService struct{}
+
+type tokenServiceInterface interface {
 	VerifyToken(int64, string) (*access_token.AccessToken, resterrors.RestError)
 	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError)
 	DeleteToken(int64, string) resterrors.RestError
 }
 
-type service struct {
-	restUsersRepo rest.RESTUsersRepository
-	dbRepo        access_token.DBRepository
-}
-
-func NewService(usersRepo rest.RESTUsersRepository, dbRepo access_token.DBRepository) Service {
-	return &service{
-		restUsersRepo: usersRepo,
-		dbRepo:        dbRepo,
-	}
-}
-
-func (s *service) VerifyToken(userId int64, accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
+func (service *tokenService) VerifyToken(userId int64, accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
+	at := &access_token.AccessToken{}
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
 		return nil, resterrors.NewUnauthorizedError("Access token is required", "")
 	}
-	accessToken, err := s.dbRepo.VerifyToken(userId, accessTokenId)
+	accessToken, err := at.VerifyToken(userId, accessTokenId)
 	if err != nil {
 		return nil, err
 	}
 	return accessToken, nil
 }
 
-func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError) {
+func (s *tokenService) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError) {
 	if err := request.Validate(); err != nil {
 		return nil, err
 	}
@@ -48,7 +43,7 @@ func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_
 
 	// Authenticate the user against the Users API:
 	if request.GrantType == "password" {
-		user, err := s.restUsersRepo.LoginUser(request.PhoneNumber, request.Password)
+		user, err := users.LoginUser(request.PhoneNumber, request.Password)
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +58,7 @@ func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_
 		at.IPAddress = request.IPAddress
 
 		// Save the new access token in Cassandra:
-		if err := s.dbRepo.CreateToken(at); err != nil {
+		if err := at.CreateToken(); err != nil {
 			return nil, err
 		}
 		return &at, nil
@@ -73,16 +68,16 @@ func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_
 
 }
 
-func (s *service) DeleteToken(userId int64, accessTokenId string) resterrors.RestError {
+func (s *tokenService) DeleteToken(userId int64, accessTokenId string) resterrors.RestError {
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
 		return resterrors.NewUnauthorizedError("Access token is required", "")
 	}
-	_, err := s.dbRepo.VerifyToken(userId, accessTokenId)
+	_, err := s.VerifyToken(userId, accessTokenId)
 	if err != nil {
 		return err
 	}
-	err = s.dbRepo.DeleteToken(accessTokenId)
+	err = s.DeleteToken(userId, accessTokenId)
 	if err != nil {
 		return err
 	}

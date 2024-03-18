@@ -22,6 +22,7 @@ type AccessToken struct {
 	DeviceType  string    `json:"device_type"`
 	DeviceModel string    `json:"device_model"`
 	IPAddress   string    `json:"ip_address"`
+	IsVerified  bool      `json:"is_verified"`
 	DateCreated time.Time `json:"date_created"`
 }
 
@@ -98,7 +99,7 @@ func (at *AccessToken) Generate() (string, resterrors.RestError) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenString string) error {
+func VerifyTokenString(tokenString string) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	})

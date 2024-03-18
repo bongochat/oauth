@@ -7,31 +7,18 @@ import (
 )
 
 const (
-	queryGetAccessToken    = "SELECT access_token, user_id, client_id, created_at FROM access_tokens WHERE access_token=?;"
+	queryGetAccessToken    = "SELECT access_token, user_id, client_id, device_id, device_type, device_model, ip, created_at FROM access_tokens WHERE access_token=?;"
 	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id, device_id, device_type, device_model, ip, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?);"
 	queryDeleteAccessToken = "DELETE FROM access_tokens WHERE access_token=?"
 )
 
-func NewRepository() DBRepository {
-	return &dbRepository{}
-}
-
-type DBRepository interface {
-	VerifyToken(int64, string) (*AccessToken, resterrors.RestError)
-	CreateToken(AccessToken) resterrors.RestError
-	DeleteToken(string) resterrors.RestError
-}
-
-type dbRepository struct {
-}
-
-func (r *dbRepository) VerifyToken(userId int64, token string) (*AccessToken, resterrors.RestError) {
+func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, resterrors.RestError) {
 	var result AccessToken
-	err := VerifyToken(token)
+	err := VerifyTokenString(token)
 	if err != nil {
 		return nil, resterrors.NewInternalServerError("Invalid access token", "", err)
 	}
-	if err := cassandra.GetSession().Query(queryGetAccessToken, token).Scan(&result.AccessToken, &result.UserId, &result.ClientId, &result.DateCreated); err != nil {
+	if err := cassandra.GetSession().Query(queryGetAccessToken, token).Scan(&result.AccessToken, &result.UserId, &result.ClientId, &result.DeviceId, &result.DeviceType, &result.DeviceModel, &result.IPAddress, &result.DateCreated); err != nil {
 		if err == gocql.ErrNotFound {
 			return nil, resterrors.NewNotFoundError("Access token not found with the given phone number", "")
 		}
@@ -43,14 +30,14 @@ func (r *dbRepository) VerifyToken(userId int64, token string) (*AccessToken, re
 	return &result, nil
 }
 
-func (r *dbRepository) CreateToken(at AccessToken) resterrors.RestError {
+func (at AccessToken) CreateToken() resterrors.RestError {
 	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.UserId, at.ClientId, at.DeviceId, at.DeviceType, at.DeviceModel, at.IPAddress, at.DateCreated).Exec(); err != nil {
 		return resterrors.NewInternalServerError("Database error", "", err)
 	}
 	return nil
 }
 
-func (r *dbRepository) DeleteToken(token string) resterrors.RestError {
+func (r AccessToken) DeleteToken(token string) resterrors.RestError {
 	if err := cassandra.GetSession().Query(queryDeleteAccessToken, token).Exec(); err != nil {
 		return resterrors.NewInternalServerError("Database error", "", err)
 	}
