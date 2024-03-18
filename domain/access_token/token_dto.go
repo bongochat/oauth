@@ -20,16 +20,18 @@ type AccessToken struct {
 	ClientId    int64     `json:"client_id,omitempty"`
 	DeviceId    string    `json:"device_id"`
 	DeviceType  string    `json:"device_type"`
+	DeviceModel string    `json:"device_model"`
 	IPAddress   string    `json:"ip_address"`
 	DateCreated time.Time `json:"date_created"`
 }
 
 type AccessTokenRequest struct {
-	GrantType  string `json:"grant_type"`
-	Scope      string `json:"scope"`
-	DeviceId   string `json:"device_id"`
-	DeviceType string `json:"device_type"`
-	IPAddress  string `json:"ip_address"`
+	GrantType   string `json:"grant_type"`
+	Scope       string `json:"scope"`
+	DeviceId    string `json:"device_id"`
+	DeviceType  string `json:"device_type"`
+	DeviceModel string `json:"device_model"`
+	IPAddress   string `json:"ip_address"`
 
 	// used for password grant type
 	PhoneNumber string `json:"phone_number"`
@@ -62,6 +64,9 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 	}
 	if at.DeviceType == "" {
 		return resterrors.NewBadRequestError("Please provide device type", "")
+	}
+	if at.DeviceModel == "" {
+		return resterrors.NewBadRequestError("Please provide device model", "")
 	}
 	if at.IPAddress == "" {
 		return resterrors.NewBadRequestError("Please provide IP address", "")

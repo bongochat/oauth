@@ -39,9 +39,10 @@ func APIUrls() {
 		})
 	})
 
-	router.POST("/api/oauth/access-token/v1/", atHandler.CreateAccessToken)
-	router.GET("/api/oauth/:user_id/verify-token/v1/", atHandler.VerifyAccessToken)
-	router.GET("/api/oauth/:user_id/logout/v1/", atHandler.DeleteAccessToken)
+	tokenAPI := router.Group("/api/user")
+	tokenAPI.POST("create-token/v1/", atHandler.CreateAccessToken)
+	tokenAPI.GET(":user_id/verify-token/v1/", atHandler.VerifyAccessToken)
+	tokenAPI.GET(":user_id/logout/v1/", atHandler.DeleteAccessToken)
 
 	// run routes with port
 	router.Run(os.Getenv("GO_PORT"))

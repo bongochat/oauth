@@ -57,6 +57,10 @@ func (s *service) CreateToken(request access_token.AccessTokenRequest) (*access_
 		token, _ := at.Generate()
 		at.AccessToken = token
 		at.DateCreated = time.Now()
+		at.DeviceId = request.DeviceId
+		at.DeviceType = request.DeviceType
+		at.DeviceModel = request.DeviceModel
+		at.IPAddress = request.IPAddress
 
 		// Save the new access token in Cassandra:
 		if err := s.dbRepo.CreateToken(at); err != nil {

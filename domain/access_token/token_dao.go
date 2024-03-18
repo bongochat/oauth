@@ -8,7 +8,7 @@ import (
 
 const (
 	queryGetAccessToken    = "SELECT access_token, user_id, client_id, created_at FROM access_tokens WHERE access_token=?;"
-	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id, created_at) VALUES(?, ?, ?, ?);"
+	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id, device_id, device_type, device_model, ip, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?);"
 	queryDeleteAccessToken = "DELETE FROM access_tokens WHERE access_token=?"
 )
 
@@ -44,7 +44,7 @@ func (r *dbRepository) VerifyToken(userId int64, token string) (*AccessToken, re
 }
 
 func (r *dbRepository) CreateToken(at AccessToken) resterrors.RestError {
-	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.UserId, at.ClientId, at.DateCreated).Exec(); err != nil {
+	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.UserId, at.ClientId, at.DeviceId, at.DeviceType, at.DeviceModel, at.IPAddress, at.DateCreated).Exec(); err != nil {
 		return resterrors.NewInternalServerError("Database error", "", err)
 	}
 	return nil
