@@ -1,8 +1,7 @@
-package db
+package access_token
 
 import (
 	"github.com/bongochat/oauth/clients/cassandra"
-	"github.com/bongochat/oauth/domain/access_token"
 	"github.com/bongochat/utils/resterrors"
 	"github.com/gocql/gocql"
 )
@@ -18,17 +17,17 @@ func NewRepository() DBRepository {
 }
 
 type DBRepository interface {
-	VerifyToken(int64, string) (*access_token.AccessToken, resterrors.RestError)
-	CreateToken(access_token.AccessToken) resterrors.RestError
+	VerifyToken(int64, string) (*AccessToken, resterrors.RestError)
+	CreateToken(AccessToken) resterrors.RestError
 	DeleteToken(string) resterrors.RestError
 }
 
 type dbRepository struct {
 }
 
-func (r *dbRepository) VerifyToken(userId int64, token string) (*access_token.AccessToken, resterrors.RestError) {
-	var result access_token.AccessToken
-	err := access_token.VerifyToken(token)
+func (r *dbRepository) VerifyToken(userId int64, token string) (*AccessToken, resterrors.RestError) {
+	var result AccessToken
+	err := VerifyToken(token)
 	if err != nil {
 		return nil, resterrors.NewInternalServerError("Invalid access token", "", err)
 	}
@@ -44,7 +43,7 @@ func (r *dbRepository) VerifyToken(userId int64, token string) (*access_token.Ac
 	return &result, nil
 }
 
-func (r *dbRepository) CreateToken(at access_token.AccessToken) resterrors.RestError {
+func (r *dbRepository) CreateToken(at AccessToken) resterrors.RestError {
 	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.UserId, at.ClientId, at.DateCreated).Exec(); err != nil {
 		return resterrors.NewInternalServerError("Database error", "", err)
 	}

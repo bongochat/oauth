@@ -18,12 +18,18 @@ type AccessToken struct {
 	AccessToken string    `json:"access_token"`
 	UserId      int64     `json:"user_id"`
 	ClientId    int64     `json:"client_id,omitempty"`
+	DeviceId    string    `json:"device_id"`
+	DeviceType  string    `json:"device_type"`
+	IPAddress   string    `json:"ip_address"`
 	DateCreated time.Time `json:"date_created"`
 }
 
 type AccessTokenRequest struct {
-	GrantType string `json:"grant_type"`
-	Scope     string `json:"scope"`
+	GrantType  string `json:"grant_type"`
+	Scope      string `json:"scope"`
+	DeviceId   string `json:"device_id"`
+	DeviceType string `json:"device_type"`
+	IPAddress  string `json:"ip_address"`
 
 	// used for password grant type
 	PhoneNumber string `json:"phone_number"`
@@ -51,12 +57,22 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 	default:
 		return resterrors.NewBadRequestError("Invalid grant type", "")
 	}
+	if at.DeviceId == "" {
+		return resterrors.NewBadRequestError("Please provide device ID", "")
+	}
+	if at.DeviceType == "" {
+		return resterrors.NewBadRequestError("Please provide device type", "")
+	}
+	if at.IPAddress == "" {
+		return resterrors.NewBadRequestError("Please provide IP address", "")
+	}
 	return nil
 }
 
-func GetNewAccessToken(userId int64) AccessToken {
+func GetNewAccessToken(userId int64, deviceId string) AccessToken {
 	return AccessToken{
-		UserId: userId,
+		UserId:   userId,
+		DeviceId: deviceId,
 	}
 }
 
@@ -65,7 +81,8 @@ var secretKey = []byte("secret-key")
 func (at *AccessToken) Generate() (string, resterrors.RestError) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"user_id": at.UserId,
+			"user_id":   at.UserId,
+			"device_id": at.DeviceId,
 		})
 
 	tokenString, err := token.SignedString(secretKey)

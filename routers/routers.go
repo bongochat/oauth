@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
+	token "github.com/bongochat/oauth/domain/access_token"
 	"github.com/bongochat/oauth/handler"
-	"github.com/bongochat/oauth/repository/db"
 	"github.com/bongochat/oauth/repository/rest"
 	"github.com/bongochat/oauth/services/access_token"
 	"github.com/gin-contrib/cors"
@@ -27,7 +27,7 @@ func APIUrls() {
 	corsconfig.MaxAge = 12 * time.Hour
 
 	router.Use(cors.New(corsconfig))
-	atHandler := handler.NewHandler(access_token.NewService(rest.NewRepository(), db.NewRepository()))
+	atHandler := handler.NewHandler(access_token.NewService(rest.NewRepository(), token.NewRepository()))
 
 	router.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "https://bongo.chat")
