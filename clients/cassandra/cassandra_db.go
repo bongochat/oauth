@@ -27,20 +27,31 @@ func init() {
 	region := os.Getenv("AWS_REGION")
 
 	cluster := gocql.NewCluster(host)
-	cluster.Port = 9142
-	cluster.Keyspace = keyspace
-	cluster.Consistency = gocql.LocalQuorum
 
-	var auth sigv4.AwsAuthenticator = sigv4.NewAwsAuthenticator()
-	auth.Region = region
-	auth.AccessKeyId = access_key
-	auth.SecretAccessKey = secret_key
+	if os.Getenv("ENV") == "PRODUCTION" {
+		cluster.Port = 9142
+		cluster.Keyspace = keyspace
+		cluster.Consistency = gocql.LocalQuorum
 
-	cluster.ProtoVersion = 4
-	cluster.SslOpts = &gocql.SslOptions{Config: &tls.Config{ServerName: host, InsecureSkipVerify: true}}
+		var auth sigv4.AwsAuthenticator = sigv4.NewAwsAuthenticator()
+		auth.Region = region
+		auth.AccessKeyId = access_key
+		auth.SecretAccessKey = secret_key
 
-	cluster.Authenticator = auth
-	cluster.DisableInitialHostLookup = false
+		cluster.ProtoVersion = 4
+		cluster.SslOpts = &gocql.SslOptions{Config: &tls.Config{ServerName: host, InsecureSkipVerify: true}}
+
+		cluster.Authenticator = auth
+		cluster.DisableInitialHostLookup = false
+
+	} else {
+		host := os.Getenv("DB_HOST")
+		keyspace := os.Getenv("KEYSPACE")
+
+		log.Println(host, keyspace)
+		cluster.Keyspace = keyspace
+		cluster.Consistency = gocql.Quorum
+	}
 
 	if session, err = cluster.CreateSession(); err != nil {
 		panic(err)
