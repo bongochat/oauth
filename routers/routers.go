@@ -7,6 +7,7 @@ import (
 
 	"github.com/bongochat/oauth/controllers/create_token"
 	"github.com/bongochat/oauth/controllers/delete_token"
+	"github.com/bongochat/oauth/controllers/devices"
 	"github.com/bongochat/oauth/controllers/verify_device"
 	"github.com/bongochat/oauth/controllers/verify_token"
 	"github.com/gin-contrib/cors"
@@ -43,6 +44,7 @@ func APIUrls() {
 	tokenAPI.POST(":user_id/verify-device/v1/", verify_device.VerifyDevice)
 	tokenAPI.GET(":user_id/verify-token/v1/", verify_token.VerifyAccessToken)
 	tokenAPI.GET(":user_id/logout/v1/", delete_token.DeleteAccessToken)
+	tokenAPI.GET(":user_id/device-list/v1/", devices.DeviceList)
 
 	// run routes with port
 	router.Run(os.Getenv("GO_PORT"))
