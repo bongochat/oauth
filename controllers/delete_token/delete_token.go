@@ -23,12 +23,12 @@ func DeleteAccessToken(c *gin.Context) {
 		return
 	}
 	accessTokenId := accessTokenString[len("Bearer "):]
-	_, err := services.TokenService.VerifyToken(userId, accessTokenId)
+	_, err := services.TokenVerifyService.VerifyToken(userId, accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		return
 	}
-	err = services.TokenService.DeleteToken(userId, accessTokenId)
+	err = services.TokenDeleteService.DeleteToken(userId, accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		return

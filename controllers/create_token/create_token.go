@@ -18,7 +18,7 @@ func CreateAccessToken(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := services.TokenService.CreateToken(request)
+	accessToken, err := services.TokenCreateService.CreateToken(request)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		return

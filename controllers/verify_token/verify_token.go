@@ -23,7 +23,7 @@ func VerifyAccessToken(c *gin.Context) {
 		return
 	}
 	accessTokenId := accessTokenString[len("Bearer "):]
-	accessToken, err := services.TokenService.VerifyToken(userId, accessTokenId)
+	accessToken, err := services.TokenVerifyService.VerifyToken(userId, accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		return
