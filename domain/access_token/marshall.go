@@ -8,6 +8,7 @@ import (
 type TokenResponse struct {
 	AccessToken string    `json:"access_token"`
 	UserId      int64     `json:"user_id"`
+	DeviceId    string    `json:"device_id"`
 	IsVerified  bool      `json:"is_verified"`
 	DateCreated time.Time `json:"date_created"`
 }
