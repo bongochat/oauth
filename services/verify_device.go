@@ -19,9 +19,13 @@ type deviceServiceInterface interface {
 
 func (service *deviceService) VerifyDevice(userId int64, tokenId string) (*verify_device.VerifyDevice, resterrors.RestError) {
 	vd := &verify_device.VerifyDevice{}
-	accessTokenId := strings.TrimSpace(vd.AccessToken)
+	accessTokenId := strings.TrimSpace(tokenId)
 	if len(accessTokenId) == 0 {
 		return nil, resterrors.NewUnauthorizedError("Access token is required", "")
+	}
+	_, err := TokenVerifyService.VerifyToken(userId, accessTokenId)
+	if err != nil {
+		return nil, err
 	}
 	accessToken, err := vd.VerifyDevice(userId, tokenId)
 	if err != nil {
