@@ -25,7 +25,7 @@ func (r Devices) DeviceList(userId int64) ([]Devices, resterrors.RestError) {
 		result = append(result, device)
 	}
 	if err := iter.Close(); err != nil {
-		return nil, resterrors.NewInternalServerError("", "", err)
+		return nil, resterrors.NewInternalServerError("Error from device list query", "", err)
 	}
 	log.Println(result)
 	return result, nil
