@@ -37,15 +37,25 @@ func init() {
 }
 
 func GetCollections() *mongo.Collection {
-	collection := Client.Database("oauth_db").Collection("access_tokens")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	DATABASE_NAME := os.Getenv("DATABASE_NAME")
+	COLLECTION_NAME := os.Getenv("COLLECTION_NAME")
+
+	collection := Client.Database(DATABASE_NAME).Collection(COLLECTION_NAME)
+
 	// Create a unique index on the "username" field
 	index := mongo.IndexModel{
 		Keys:    bson.M{"accesstoken": 1},
 		Options: options.Index().SetUnique(true),
 	}
-	_, err := collection.Indexes().CreateOne(context.Background(), index)
+	_, err = collection.Indexes().CreateOne(context.Background(), index)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return collection
 }
