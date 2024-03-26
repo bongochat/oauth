@@ -1,15 +1,12 @@
 package access_token
 
 import (
-	"github.com/bongochat/oauth/clients/cassandra"
-	"github.com/bongochat/utils/resterrors"
-	"github.com/gocql/gocql"
-)
+	"context"
 
-const (
-	queryGetAccessToken    = "SELECT access_token, user_id, client_id, device_id, is_verified, device_type, device_model, ip, created_at FROM access_tokens WHERE access_token=?;"
-	queryCreateAccessToken = "INSERT INTO access_tokens(access_token, user_id, client_id, device_id, is_verified, device_type, device_model, ip, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);"
-	queryDeleteAccessToken = "DELETE FROM access_tokens WHERE access_token=?"
+	"github.com/bongochat/oauth/clients/mongodb"
+	"github.com/bongochat/utils/resterrors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, resterrors.RestError) {
@@ -18,11 +15,9 @@ func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, rest
 	if err != nil {
 		return nil, resterrors.NewInternalServerError("Invalid access token", "", err)
 	}
-	if err := cassandra.GetSession().Query(queryGetAccessToken, token).Scan(&result.AccessToken, &result.UserId, &result.ClientId, &result.DeviceId, &result.IsVerified, &result.DeviceType, &result.DeviceModel, &result.IPAddress, &result.DateCreated); err != nil {
-		if err == gocql.ErrNotFound {
-			return nil, resterrors.NewNotFoundError("Access token not found with the given phone number", "")
-		}
-		return nil, resterrors.NewInternalServerError("Database error", "", err)
+	filter := bson.M{"accesstoken": token}
+	if err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(&result); err != nil {
+		return nil, resterrors.NewInternalServerError("Access token not found", "", err)
 	}
 	if userId != result.UserId {
 		return nil, resterrors.NewUnauthorizedError("Access token not matching with the given user", "")
@@ -30,16 +25,34 @@ func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, rest
 	return &result, nil
 }
 
-func (at AccessToken) CreateToken() resterrors.RestError {
-	if err := cassandra.GetSession().Query(queryCreateAccessToken, at.AccessToken, at.UserId, at.ClientId, at.DeviceId, at.IsVerified, at.DeviceType, at.DeviceModel, at.IPAddress, at.DateCreated).Exec(); err != nil {
-		return resterrors.NewInternalServerError("Database error", "", err)
+func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
+	_, err := mongodb.GetCollections().InsertOne(context.Background(), at)
+	if err != nil {
+		if wErr, ok := err.(mongo.WriteException); ok {
+			for _, we := range wErr.WriteErrors {
+				if we.Code == 11000 {
+					at.IsVerified = true
+					return &at, nil
+				}
+			}
+		} else {
+			return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
+		}
+		return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
 	}
-	return nil
+	return &at, nil
 }
 
 func (r AccessToken) DeleteToken(token string) resterrors.RestError {
-	if err := cassandra.GetSession().Query(queryDeleteAccessToken, token).Exec(); err != nil {
+	filter := bson.M{"accesstoken": token}
+	result, err := mongodb.GetCollections().DeleteOne(context.Background(), filter)
+	if err != nil {
 		return resterrors.NewInternalServerError("Database error", "", err)
+	}
+
+	// Check if the deletion was successful
+	if result.DeletedCount == 0 {
+		return resterrors.NewInternalServerError("Token not found", "", err)
 	}
 	return nil
 }

@@ -41,11 +41,12 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		at.DeviceModel = request.DeviceModel
 		at.IPAddress = request.IPAddress
 
-		// Save the new access token in Cassandra:
-		if err := at.CreateToken(); err != nil {
+		// Save the new access token in MongoDB:
+		result, err := at.CreateToken()
+		if err != nil {
 			return nil, err
 		}
-		return &at, nil
+		return result, nil
 	} else {
 		return nil, resterrors.NewBadRequestError("Invalid authentication type", request.GrantType)
 	}
