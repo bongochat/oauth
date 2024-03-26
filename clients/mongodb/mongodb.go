@@ -37,7 +37,7 @@ func init() {
 }
 
 func GetCollections() *mongo.Collection {
-	collection := Client.Database("oauth_db").Collection("tokens")
+	collection := Client.Database("oauth_db").Collection("access_tokens")
 	// Create a unique index on the "username" field
 	index := mongo.IndexModel{
 		Keys:    bson.M{"accesstoken": 1},

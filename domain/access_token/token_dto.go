@@ -2,6 +2,7 @@ package access_token
 
 import (
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
@@ -21,7 +22,7 @@ type AccessToken struct {
 	DeviceId    string    `json:"device_id"`
 	DeviceType  string    `json:"device_type"`
 	DeviceModel string    `json:"device_model"`
-	IPAddress   string    `json:"ip_address"`
+	IPAddress   net.IP    `json:"ip_address"`
 	IsVerified  bool      `json:"is_verified"`
 	DateCreated time.Time `json:"date_created"`
 }
@@ -32,7 +33,7 @@ type AccessTokenRequest struct {
 	DeviceId    string `json:"device_id"`
 	DeviceType  string `json:"device_type"`
 	DeviceModel string `json:"device_model"`
-	IPAddress   string `json:"ip_address"`
+	IPAddress   net.IP `json:"ip_address"`
 
 	// used for password grant type
 	PhoneNumber string `json:"phone_number"`
@@ -69,7 +70,7 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 	if at.DeviceModel == "" {
 		return resterrors.NewBadRequestError("Please provide device model", "")
 	}
-	if at.IPAddress == "" {
+	if at.IPAddress == nil {
 		return resterrors.NewBadRequestError("Please provide IP address", "")
 	}
 	return nil
