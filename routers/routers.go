@@ -39,12 +39,12 @@ func APIUrls() {
 		})
 	})
 
-	tokenAPI := router.Group("/api/user")
-	tokenAPI.POST("create-token/v1/", create_token.CreateAccessToken)
-	tokenAPI.POST(":user_id/verify-device/v1/", verify_device.VerifyDevice)
-	tokenAPI.GET(":user_id/verify-token/v1/", verify_token.VerifyAccessToken)
-	tokenAPI.GET(":user_id/logout/v1/", delete_token.DeleteAccessToken)
-	tokenAPI.GET(":user_id/device-list/v1/", devices.DeviceList)
+	tokenAPI := router.Group("/api/v1/user")
+	tokenAPI.POST("create-token/", create_token.CreateAccessToken)
+	tokenAPI.POST(":user_id/verify-device/", verify_device.VerifyDevice)
+	tokenAPI.GET(":user_id/verify-token/", verify_token.VerifyAccessToken)
+	tokenAPI.GET(":user_id/logout/", delete_token.DeleteAccessToken)
+	tokenAPI.GET(":user_id/device-list/", devices.DeviceList)
 
 	// run routes with port
 	router.Run(os.Getenv("GO_PORT"))
