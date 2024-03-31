@@ -29,7 +29,7 @@ func APIUrls() {
 
 	router.Use(cors.New(corsconfig))
 
-	router.GET("/", func(c *gin.Context) {
+	router.GET("", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "https://bongo.chat")
 	})
 	router.GET("/ping", func(c *gin.Context) {
