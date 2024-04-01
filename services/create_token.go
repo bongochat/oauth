@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bongochat/oauth/domain/access_token"
+	"github.com/bongochat/oauth/logger"
 	"github.com/bongochat/oauth/users"
 	"github.com/bongochat/utils/resterrors"
 )
@@ -29,6 +30,7 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 	if request.GrantType == "password" {
 		user, err := users.LoginUser(request.PhoneNumber, request.Password)
 		if err != nil {
+			logger.RestErrorLog(err)
 			return nil, err
 		}
 		at := access_token.GetNewAccessToken(user.Id, request.DeviceId)
@@ -44,6 +46,7 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		// Save the new access token in MongoDB:
 		result, err := at.CreateToken()
 		if err != nil {
+			logger.RestErrorLog(err)
 			return nil, err
 		}
 		return result, nil

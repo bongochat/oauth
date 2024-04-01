@@ -20,14 +20,20 @@ var (
 
 func APIUrls() {
 	corsconfig := cors.DefaultConfig()
-	corsconfig.AllowOrigins = []string{"*"}
-	corsconfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
-	corsconfig.AllowHeaders = []string{"Origin"}
+	corsconfig.AllowOrigins = []string{"https://*.bongo.chat"}
+	corsconfig.AllowMethods = []string{"GET", "POST"}
+	corsconfig.AllowHeaders = []string{"Origin", "Content-Type", "Cache-Control", "max-age=3600, private"}
 	corsconfig.AllowCredentials = true
 	corsconfig.ExposeHeaders = []string{"Authorization", "Content-Length"}
 	corsconfig.MaxAge = 12 * time.Hour
 
 	router.Use(cors.New(corsconfig))
+
+	router.Use(func(c *gin.Context) {
+		// Set cache control headers
+		c.Header("Cache-Control", "max-age=3600, public") // Cache response for 1 hour
+		c.Next()
+	})
 
 	router.GET("", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "https://bongo.chat")

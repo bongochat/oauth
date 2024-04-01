@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/bongochat/oauth/domain/devices"
+	"github.com/bongochat/oauth/logger"
 	"github.com/bongochat/utils/resterrors"
 )
 
@@ -21,14 +22,17 @@ func (service *deviceListService) DeviceList(userId int64, tokenId string) ([]de
 	devices := &devices.Devices{}
 	accessTokenId := strings.TrimSpace(tokenId)
 	if len(accessTokenId) == 0 {
+		logger.ErrorMsgLog("Access token is required")
 		return nil, resterrors.NewUnauthorizedError("Access token is required", "")
 	}
 	_, err := TokenVerifyService.VerifyToken(userId, accessTokenId)
 	if err != nil {
+		logger.RestErrorLog(err)
 		return nil, err
 	}
 	deviceList, err := devices.DeviceList(userId)
 	if err != nil {
+		logger.RestErrorLog(err)
 		return nil, err
 	}
 	return deviceList, nil

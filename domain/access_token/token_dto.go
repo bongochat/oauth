@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bongochat/oauth/logger"
 	"github.com/bongochat/utils/resterrors"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -94,6 +95,7 @@ func (at *AccessToken) Generate() (string, resterrors.RestError) {
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
+		logger.ErrorLog(err)
 		return "", resterrors.NewInternalServerError("Token generation failed", "", err)
 	}
 
@@ -106,10 +108,12 @@ func VerifyTokenString(tokenString string) error {
 	})
 
 	if err != nil {
+		logger.ErrorLog(err)
 		return err
 	}
 
 	if !token.Valid {
+		logger.ErrorMsgLog("Invalid token")
 		return fmt.Errorf("invalid token")
 	}
 

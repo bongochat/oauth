@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/bongochat/oauth/domain/access_token"
+	"github.com/bongochat/oauth/logger"
 	"github.com/bongochat/utils/resterrors"
 )
 
@@ -21,14 +22,17 @@ func (s *tokenDeleteService) DeleteToken(userId int64, accessTokenId string) res
 	at := &access_token.AccessToken{}
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
+		logger.ErrorMsgLog("Access token is required")
 		return resterrors.NewUnauthorizedError("Access token is required", "")
 	}
 	_, err := TokenVerifyService.VerifyToken(userId, accessTokenId)
 	if err != nil {
+		logger.RestErrorLog(err)
 		return err
 	}
 	err = at.DeleteToken(accessTokenId)
 	if err != nil {
+		logger.RestErrorLog(err)
 		return err
 	}
 	return nil

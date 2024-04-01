@@ -5,6 +5,7 @@ import (
 
 	"github.com/bongochat/oauth/clients/mongodb"
 	"github.com/bongochat/oauth/domain/access_token"
+	"github.com/bongochat/oauth/logger"
 	"github.com/bongochat/utils/resterrors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,6 +15,7 @@ func (r VerifyDevice) VerifyDevice(userId int64, token string) (*VerifyDevice, r
 	var result VerifyDevice
 	err := access_token.VerifyTokenString(token)
 	if err != nil {
+		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Invalid access token", "", err)
 	}
 
@@ -24,6 +26,7 @@ func (r VerifyDevice) VerifyDevice(userId int64, token string) (*VerifyDevice, r
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
 	if err := mongodb.GetCollections().FindOneAndUpdate(context.Background(), filter, update, opts).Decode(&result); err != nil {
+		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Database error", "", err)
 	}
 	return &result, nil

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/bongochat/oauth/domain/verify_device"
+	"github.com/bongochat/oauth/logger"
 	"github.com/bongochat/utils/resterrors"
 )
 
@@ -21,14 +22,17 @@ func (service *deviceService) VerifyDevice(userId int64, tokenId string) (*verif
 	vd := &verify_device.VerifyDevice{}
 	accessTokenId := strings.TrimSpace(tokenId)
 	if len(accessTokenId) == 0 {
+		logger.ErrorMsgLog("Access token is required")
 		return nil, resterrors.NewUnauthorizedError("Access token is required", "")
 	}
 	_, err := TokenVerifyService.VerifyToken(userId, accessTokenId)
 	if err != nil {
+		logger.RestErrorLog(err)
 		return nil, err
 	}
 	accessToken, err := vd.VerifyDevice(userId, tokenId)
 	if err != nil {
+		logger.RestErrorLog(err)
 		return nil, err
 	}
 	return accessToken, nil

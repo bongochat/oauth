@@ -23,3 +23,4 @@ go.work
 conf.toml
 logs/
 .env
+key/
