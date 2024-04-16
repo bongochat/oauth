@@ -1,5 +1,0 @@
-CREATE KEYSPACE kayspace_name WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};
-describe keyspaces;
-USE oauth;
-describe tables;
-CREATE TABLE access_tokens (access_token varchar PRIMARY KEY, user_id bigint, client_id bigint, device_id varchar, device_type varchar, device_model varchar, ip varchar, is_verified boolean, created_at timestamp);
