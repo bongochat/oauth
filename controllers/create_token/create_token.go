@@ -20,14 +20,15 @@ func CreateAccessToken(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := services.TokenCreateService.CreateToken(request)
+	accessToken, user, err := services.TokenCreateService.CreateToken(request)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		logger.RestErrorLog(err)
 		return
 	}
+
 	c.JSON(http.StatusCreated, gin.H{
-		"result": accessToken.Marshall(),
+		"result": accessToken.TokenMarshall(user),
 		"status": http.StatusCreated,
 	})
 }

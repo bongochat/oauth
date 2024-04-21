@@ -5,10 +5,20 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/bongochat/oauth/domain/users"
 	"github.com/bongochat/utils/resterrors"
 	"github.com/go-resty/resty/v2"
 )
+
+type User struct {
+	Id          int64  `json:"id"`
+	CountryCode string `json:"country_code"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+type UserLoginRequest struct {
+	PhoneNumber string `json:"phone_number"`
+	Password    string `json:"password"`
+}
 
 var (
 	userHostUrl     = os.Getenv("USER_HOST_URL")
@@ -16,8 +26,8 @@ var (
 	userClient      = resty.New().SetBaseURL(userHostUrl)
 )
 
-func LoginUser(phone_number string, password string) (*users.User, resterrors.RestError) {
-	request := users.UserLoginRequest{
+func LoginUser(phone_number string, password string) (*User, resterrors.RestError) {
+	request := UserLoginRequest{
 		PhoneNumber: phone_number,
 		Password:    password,
 	}
@@ -43,7 +53,7 @@ func LoginUser(phone_number string, password string) (*users.User, resterrors.Re
 		return nil, apiErr
 	}
 
-	var user users.User
+	var user User
 	if err := json.Unmarshal(response.Body(), &user); err != nil {
 		return nil, resterrors.NewInternalServerError("error unmarshalling", "", err)
 	}

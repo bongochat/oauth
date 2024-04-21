@@ -16,12 +16,12 @@ var (
 type tokenCreateService struct{}
 
 type tokenCreateServiceInterface interface {
-	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError)
+	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *users.User, resterrors.RestError)
 }
 
-func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, resterrors.RestError) {
+func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, *users.User, resterrors.RestError) {
 	if err := request.Validate(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	//TODO: Support both grant types: client_credentials and password
@@ -31,7 +31,7 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		user, err := users.LoginUser(request.PhoneNumber, request.Password)
 		if err != nil {
 			logger.RestErrorLog(err)
-			return nil, err
+			return nil, nil, err
 		}
 		at := access_token.GetNewAccessToken(user.Id, request.DeviceId)
 		// Generate a new access token:
@@ -47,11 +47,11 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		result, err := at.CreateToken()
 		if err != nil {
 			logger.RestErrorLog(err)
-			return nil, err
+			return nil, nil, err
 		}
-		return result, nil
+		return result, user, nil
 	} else {
-		return nil, resterrors.NewBadRequestError("Invalid authentication type", request.GrantType)
+		return nil, nil, resterrors.NewBadRequestError("Invalid authentication type", request.GrantType)
 	}
 
 }
