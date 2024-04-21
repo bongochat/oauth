@@ -32,8 +32,5 @@ func VerifyAccessToken(c *gin.Context) {
 		logger.RestErrorLog(err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"result": accessToken.Marshall(),
-		"status": http.StatusOK,
-	})
+	c.JSON(http.StatusOK, accessToken.Marshall())
 }
