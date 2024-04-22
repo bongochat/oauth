@@ -34,7 +34,15 @@ func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 	filter := bson.M{"accesstoken": at.AccessToken}
 	update := bson.M{
 		"$set": bson.M{
-			"isactive": at.IsActive,
+			"userid":      at.UserId,
+			"clientid":    at.ClientId,
+			"deviceid":    at.DeviceId,
+			"devicetype":  at.DeviceType,
+			"devicemodel": at.DeviceModel,
+			"ipaddress":   at.IPAddress,
+			"isverified":  at.IsVerified,
+			"isactive":    at.IsActive,
+			"datecreated": at.DateCreated,
 		},
 	}
 	options := options.Update().SetUpsert(true)
