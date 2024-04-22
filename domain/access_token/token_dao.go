@@ -45,10 +45,17 @@ func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 		},
 	}
 	options := options.Update().SetUpsert(true)
-	_, err := mongodb.GetCollections().UpdateOne(context.Background(), filter, update, options)
+	result, err := mongodb.GetCollections().UpdateOne(context.Background(), filter, update, options)
 	if err != nil {
 		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
+	}
+	if result.ModifiedCount > 0 {
+		err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(at)
+		if err != nil {
+			logger.ErrorLog(err)
+			return nil, resterrors.NewInternalServerError("Failed to retrieve updated document", "", err)
+		}
 	}
 	return &at, nil
 }
