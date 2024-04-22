@@ -40,7 +40,6 @@ func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 			"devicetype":  at.DeviceType,
 			"devicemodel": at.DeviceModel,
 			"ipaddress":   at.IPAddress,
-			"isverified":  at.IsVerified,
 			"isactive":    at.IsActive,
 			"datecreated": at.DateCreated,
 		},
