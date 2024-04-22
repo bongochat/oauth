@@ -25,6 +25,7 @@ type AccessToken struct {
 	DeviceModel string    `json:"device_model"`
 	IPAddress   net.IP    `json:"ip_address"`
 	IsVerified  bool      `json:"is_verified"`
+	IsActive    bool      `json:"is_active"`
 	DateCreated time.Time `json:"date_created"`
 }
 

@@ -8,7 +8,7 @@ import (
 	"github.com/bongochat/oauth/logger"
 	"github.com/bongochat/utils/resterrors"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, resterrors.RestError) {
@@ -31,37 +31,28 @@ func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, rest
 }
 
 func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
-	_, err := mongodb.GetCollections().InsertOne(context.Background(), at)
+	filter := bson.M{"accesstoken": at.AccessToken}
+	update := bson.M{
+		"$set": bson.M{
+			"isactive": at.IsActive,
+		},
+	}
+	options := options.Update().SetUpsert(true)
+	_, err := mongodb.GetCollections().UpdateOne(context.Background(), filter, update, options)
 	if err != nil {
-		if wErr, ok := err.(mongo.WriteException); ok {
-			for _, we := range wErr.WriteErrors {
-				if we.Code == 11000 {
-					at.IsVerified = true
-					return &at, nil
-				}
-			}
-		} else {
-			logger.ErrorLog(err)
-			return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
-		}
 		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
 	}
 	return &at, nil
 }
 
-func (r AccessToken) DeleteToken(token string) resterrors.RestError {
+func (r AccessToken) DeactivateToken(token string) resterrors.RestError {
 	filter := bson.M{"accesstoken": token}
-	result, err := mongodb.GetCollections().DeleteOne(context.Background(), filter)
+	update := bson.M{"$set": bson.M{"isactive": false}}
+	_, err := mongodb.GetCollections().UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		logger.ErrorLog(err)
-		return resterrors.NewInternalServerError("Database error", "", err)
-	}
-
-	// Check if the deletion was successful
-	if result.DeletedCount == 0 {
-		logger.ErrorLog(err)
-		return resterrors.NewInternalServerError("Token not found", "", err)
+		return resterrors.NewInternalServerError("Database err", "", err)
 	}
 	return nil
 }

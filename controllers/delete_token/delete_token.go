@@ -32,7 +32,7 @@ func DeleteAccessToken(c *gin.Context) {
 		logger.RestErrorLog(err)
 		return
 	}
-	err = services.TokenDeleteService.DeleteToken(userId, accessTokenId)
+	err = services.TokenDeleteService.DeactivateToken(userId, accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		logger.RestErrorLog(err)

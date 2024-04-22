@@ -14,6 +14,7 @@ type TokenResponse struct {
 	PhoneNumber string    `json:"phone_number"`
 	DeviceId    string    `json:"device_id"`
 	IsVerified  bool      `json:"is_verified"`
+	IsActive    bool      `json:"is_active"`
 	DateCreated time.Time `json:"date_created"`
 }
 

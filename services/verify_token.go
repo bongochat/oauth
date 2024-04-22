@@ -30,5 +30,8 @@ func (service *tokenVerifyService) VerifyToken(userId int64, accessTokenId strin
 		logger.RestErrorLog(err)
 		return nil, err
 	}
+	if !accessToken.IsActive {
+		return nil, resterrors.NewUnauthorizedError("Access token is not active", "")
+	}
 	return accessToken, nil
 }

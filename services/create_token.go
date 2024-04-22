@@ -42,6 +42,7 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		at.DeviceType = request.DeviceType
 		at.DeviceModel = request.DeviceModel
 		at.IPAddress = request.IPAddress
+		at.IsActive = true
 
 		// Save the new access token in MongoDB:
 		result, err := at.CreateToken()
