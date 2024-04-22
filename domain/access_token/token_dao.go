@@ -51,7 +51,7 @@ func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 		return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
 	}
 	if result.ModifiedCount > 0 {
-		err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(at)
+		err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(&at)
 		if err != nil {
 			logger.ErrorLog(err)
 			return nil, resterrors.NewInternalServerError("Failed to retrieve updated document", "", err)
