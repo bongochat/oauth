@@ -11,6 +11,7 @@ import (
 
 type User struct {
 	Id          int64  `json:"id"`
+	CountryId   int8   `json:"country_id"`
 	CountryCode string `json:"country_code"`
 	PhoneNumber string `json:"phone_number"`
 }

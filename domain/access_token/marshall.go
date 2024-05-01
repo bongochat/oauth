@@ -10,6 +10,7 @@ import (
 type TokenResponse struct {
 	AccessToken string    `json:"access_token"`
 	UserId      int64     `json:"user_id"`
+	CountryId   int8      `json:"country_id"`
 	CountryCode string    `json:"country_code"`
 	PhoneNumber string    `json:"phone_number"`
 	DeviceId    string    `json:"device_id"`
