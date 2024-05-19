@@ -52,6 +52,9 @@ func APIUrls() {
 	tokenAPI.GET(":user_id/logout/", delete_token.DeleteAccessToken)
 	tokenAPI.GET(":user_id/device-list/", devices.DeviceList)
 
+	clientTokenAPI := router.Group("/api/v1/client")
+	clientTokenAPI.POST("create-token/", create_token.CreateClientAccessToken)
+
 	// run routes with port
 	router.Run(os.Getenv("GO_PORT"))
 }

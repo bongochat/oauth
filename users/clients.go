@@ -24,7 +24,7 @@ type LoginRequest struct {
 
 var (
 	clientHostUrl     = os.Getenv("USER_HOST_URL")
-	clientLoginApiUrl = os.Getenv("USER_LOGIN_API_URL")
+	clientLoginApiUrl = os.Getenv("CLIENT_LOGIN_API_URL")
 	clientClient      = resty.New().SetBaseURL(clientHostUrl)
 )
 

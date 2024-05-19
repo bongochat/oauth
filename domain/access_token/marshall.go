@@ -10,10 +10,19 @@ import (
 type TokenResponse struct {
 	AccessToken string    `json:"access_token"`
 	UserId      int64     `json:"user_id"`
+	ClientId    string    `json:"client_id"`
 	CountryId   int8      `json:"country_id"`
 	CountryCode string    `json:"country_code"`
 	PhoneNumber string    `json:"phone_number"`
 	DeviceId    string    `json:"device_id"`
+	IsVerified  bool      `json:"is_verified"`
+	IsActive    bool      `json:"is_active"`
+	DateCreated time.Time `json:"date_created"`
+}
+
+type ClientTokenResponse struct {
+	AccessToken string    `json:"access_token"`
+	ClientId    string    `json:"client_id"`
 	IsVerified  bool      `json:"is_verified"`
 	IsActive    bool      `json:"is_active"`
 	DateCreated time.Time `json:"date_created"`
@@ -32,5 +41,14 @@ func (at *AccessToken) TokenMarshall(user *users.User) interface{} {
 	var tokenResponse TokenResponse
 	json.Unmarshal(tokenJson, &tokenResponse)
 	json.Unmarshal(userJson, &tokenResponse)
+	return tokenResponse
+}
+
+func (at *AccessToken) ClientTokenMarshall(client *users.Client) interface{} {
+	tokenJson, _ := json.Marshal(at)
+	clientJson, _ := json.Marshal(client)
+	var tokenResponse ClientTokenResponse
+	json.Unmarshal(tokenJson, &tokenResponse)
+	json.Unmarshal(clientJson, &tokenResponse)
 	return tokenResponse
 }

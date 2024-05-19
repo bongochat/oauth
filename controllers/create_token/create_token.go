@@ -32,3 +32,25 @@ func CreateAccessToken(c *gin.Context) {
 		"status": http.StatusCreated,
 	})
 }
+
+func CreateClientAccessToken(c *gin.Context) {
+	var request atDomain.AccessTokenRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		restErr := resterrors.NewBadRequestError("Invalid request", "")
+		c.JSON(restErr.Status(), restErr)
+		logger.RestErrorLog(restErr)
+		return
+	}
+
+	accessToken, client, err := services.TokenCreateService.CreateClientToken(request)
+	if err != nil {
+		c.JSON(err.Status(), err)
+		logger.RestErrorLog(err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"result": accessToken.ClientTokenMarshall(client),
+		"status": http.StatusCreated,
+	})
+}

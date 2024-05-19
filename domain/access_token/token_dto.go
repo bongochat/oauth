@@ -17,16 +17,17 @@ const (
 )
 
 type AccessToken struct {
-	AccessToken string    `json:"access_token"`
-	UserId      int64     `json:"user_id"`
-	ClientId    int64     `json:"client_id,omitempty"`
-	DeviceId    string    `json:"device_id"`
-	DeviceType  string    `json:"device_type"`
-	DeviceModel string    `json:"device_model"`
-	IPAddress   net.IP    `json:"ip_address"`
-	IsVerified  bool      `json:"is_verified"`
-	IsActive    bool      `json:"is_active"`
-	DateCreated time.Time `json:"date_created"`
+	AccessToken  string    `json:"access_token"`
+	UserId       int64     `json:"user_id"`
+	ClientId     string    `json:"client_id,omitempty"`
+	ClientSecret string    `json:"client_secret,omitempty"`
+	DeviceId     string    `json:"device_id"`
+	DeviceType   string    `json:"device_type"`
+	DeviceModel  string    `json:"device_model"`
+	IPAddress    net.IP    `json:"ip_address"`
+	IsVerified   bool      `json:"is_verified"`
+	IsActive     bool      `json:"is_active"`
+	DateCreated  time.Time `json:"date_created"`
 }
 
 type AccessTokenRequest struct {
@@ -63,17 +64,19 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 	default:
 		return resterrors.NewBadRequestError("Invalid grant type", "")
 	}
-	if at.DeviceId == "" {
-		return resterrors.NewBadRequestError("Please provide device ID", "")
-	}
-	if at.DeviceType == "" {
-		return resterrors.NewBadRequestError("Please provide device type", "")
-	}
-	if at.DeviceModel == "" {
-		return resterrors.NewBadRequestError("Please provide device model", "")
-	}
-	if at.IPAddress == nil {
-		return resterrors.NewBadRequestError("Please provide IP address", "")
+	if at.GrantType == grantTypePassword {
+		if at.DeviceId == "" {
+			return resterrors.NewBadRequestError("Please provide device ID", "")
+		}
+		if at.DeviceType == "" {
+			return resterrors.NewBadRequestError("Please provide device type", "")
+		}
+		if at.DeviceModel == "" {
+			return resterrors.NewBadRequestError("Please provide device model", "")
+		}
+		if at.IPAddress == nil {
+			return resterrors.NewBadRequestError("Please provide IP address", "")
+		}
 	}
 	return nil
 }
@@ -85,6 +88,13 @@ func GetNewAccessToken(userId int64, deviceId string) AccessToken {
 	}
 }
 
+func GetNewClientAccessToken(clientId string, clientSecret string) AccessToken {
+	return AccessToken{
+		ClientId:     clientId,
+		ClientSecret: clientSecret,
+	}
+}
+
 var secretKey = []byte("secret-key")
 
 func (at *AccessToken) Generate() (string, resterrors.RestError) {
@@ -92,6 +102,22 @@ func (at *AccessToken) Generate() (string, resterrors.RestError) {
 		jwt.MapClaims{
 			"user_id":   at.UserId,
 			"device_id": at.DeviceId,
+		})
+
+	tokenString, err := token.SignedString(secretKey)
+	if err != nil {
+		logger.ErrorLog(err)
+		return "", resterrors.NewInternalServerError("Token generation failed", "", err)
+	}
+
+	return tokenString, nil
+}
+
+func (at *AccessToken) GenerateClientToken() (string, resterrors.RestError) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"client_id":     at.ClientId,
+			"client_secret": at.ClientSecret,
 		})
 
 	tokenString, err := token.SignedString(secretKey)
