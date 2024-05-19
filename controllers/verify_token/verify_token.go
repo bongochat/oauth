@@ -43,14 +43,8 @@ func VerifyClientAccessToken(c *gin.Context) {
 		logger.RestErrorLog(restErr)
 		return
 	}
-	clientId, userIdErr := utils.GetClientID(c.Param("client_id"))
-	if userIdErr != nil {
-		c.JSON(userIdErr.Status(), userIdErr)
-		logger.RestErrorLog(userIdErr)
-		return
-	}
 	accessTokenId := accessTokenString[len("Bearer "):]
-	accessToken, err := services.TokenVerifyService.VerifyClientToken(clientId, accessTokenId)
+	accessToken, err := services.TokenVerifyService.VerifyClientToken(accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		logger.RestErrorLog(err)

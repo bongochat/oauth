@@ -30,7 +30,7 @@ func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, rest
 	return &result, nil
 }
 
-func (r AccessToken) VerifyClientToken(clientId string, token string) (*AccessToken, resterrors.RestError) {
+func (r AccessToken) VerifyClientToken(token string) (*AccessToken, resterrors.RestError) {
 	var result AccessToken
 	err := VerifyTokenString(token)
 	if err != nil {
@@ -41,10 +41,6 @@ func (r AccessToken) VerifyClientToken(clientId string, token string) (*AccessTo
 	if err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(&result); err != nil {
 		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Access token not found", "", err)
-	}
-	if clientId != result.ClientId {
-		logger.ErrorMsgLog(fmt.Sprintf("Access token not matching with the given user=%s", result.ClientId))
-		return nil, resterrors.NewUnauthorizedError("Access token not matching with the given client", "")
 	}
 	return &result, nil
 }

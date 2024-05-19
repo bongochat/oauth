@@ -16,7 +16,7 @@ type tokenVerifyService struct{}
 
 type tokenVerifyServiceInterface interface {
 	VerifyToken(int64, string) (*access_token.AccessToken, resterrors.RestError)
-	VerifyClientToken(string, string) (*access_token.AccessToken, resterrors.RestError)
+	VerifyClientToken(string) (*access_token.AccessToken, resterrors.RestError)
 }
 
 func (service *tokenVerifyService) VerifyToken(userId int64, accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
@@ -37,14 +37,14 @@ func (service *tokenVerifyService) VerifyToken(userId int64, accessTokenId strin
 	return accessToken, nil
 }
 
-func (service *tokenVerifyService) VerifyClientToken(clientId string, accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
+func (service *tokenVerifyService) VerifyClientToken(accessTokenId string) (*access_token.AccessToken, resterrors.RestError) {
 	at := &access_token.AccessToken{}
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
 		logger.ErrorMsgLog("Access token is required")
 		return nil, resterrors.NewUnauthorizedError("Access token is required", "")
 	}
-	accessToken, err := at.VerifyClientToken(clientId, accessTokenId)
+	accessToken, err := at.VerifyClientToken(accessTokenId)
 	if err != nil {
 		logger.RestErrorLog(err)
 		return nil, err
