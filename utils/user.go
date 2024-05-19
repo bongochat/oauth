@@ -13,3 +13,10 @@ func GetUserID(userIdParam string) (int64, resterrors.RestError) {
 	}
 	return userId, nil
 }
+
+func GetClientID(clientIdParam string) (string, resterrors.RestError) {
+	if clientIdParam == "" {
+		return "", resterrors.NewBadRequestError("client id should be a string", "")
+	}
+	return clientIdParam, nil
+}

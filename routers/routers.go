@@ -54,6 +54,7 @@ func APIUrls() {
 
 	clientTokenAPI := router.Group("/api/v1/client")
 	clientTokenAPI.POST("create-token/", create_token.CreateClientAccessToken)
+	clientTokenAPI.GET(":client_id/verify-token/", verify_token.VerifyClientAccessToken)
 
 	// run routes with port
 	router.Run(os.Getenv("GO_PORT"))
