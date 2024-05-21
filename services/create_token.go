@@ -85,7 +85,7 @@ func (s *tokenCreateService) CreateClientToken(request access_token.AccessTokenR
 		at.IsVerified = true
 
 		// Save the new access token in MongoDB:
-		result, err := at.CreateToken()
+		result, err := at.CreateClientToken()
 		if err != nil {
 			logger.RestErrorLog(err)
 			return nil, nil, err

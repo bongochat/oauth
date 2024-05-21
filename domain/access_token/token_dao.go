@@ -78,6 +78,40 @@ func (at *AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 	return at, nil
 }
 
+func (at *AccessToken) CreateClientToken() (*AccessToken, resterrors.RestError) {
+	filter := bson.M{"accesstoken": at.AccessToken}
+	update := bson.M{
+		"$set": bson.M{
+			"userid":       at.UserId,
+			"clientid":     at.ClientId,
+			"clientsecret": at.ClientSecret,
+			"deviceid":     at.DeviceId,
+			"devicetype":   at.DeviceType,
+			"devicemodel":  at.DeviceModel,
+			"ipaddress":    at.IPAddress,
+			"isactive":     at.IsActive,
+			"datecreated":  at.DateCreated,
+			"isverified":   at.IsVerified,
+		},
+	}
+	options := options.Update().SetUpsert(true)
+	result, err := mongodb.GetCollections().UpdateOne(context.Background(), filter, update, options)
+	if err != nil {
+		logger.ErrorLog(err)
+		return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
+	}
+
+	if result.ModifiedCount > 0 {
+		err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(at)
+		if err != nil {
+			logger.ErrorLog(err)
+			return nil, resterrors.NewInternalServerError("Failed to retrieve updated document", "", err)
+		}
+	}
+
+	return at, nil
+}
+
 func (r AccessToken) DeactivateToken(token string) resterrors.RestError {
 	filter := bson.M{"accesstoken": token}
 	update := bson.M{"$set": bson.M{"isactive": false}}
