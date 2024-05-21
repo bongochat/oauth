@@ -45,7 +45,7 @@ func (r AccessToken) VerifyClientToken(token string) (*AccessToken, resterrors.R
 	return &result, nil
 }
 
-func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
+func (at *AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 	filter := bson.M{"accesstoken": at.AccessToken}
 	update := bson.M{
 		"$set": bson.M{
@@ -58,7 +58,6 @@ func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 			"ipaddress":    at.IPAddress,
 			"isactive":     at.IsActive,
 			"datecreated":  at.DateCreated,
-			"isverified":   at.IsVerified,
 		},
 	}
 	options := options.Update().SetUpsert(true)
@@ -67,14 +66,16 @@ func (at AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Mongo Database error", "", err)
 	}
+
 	if result.ModifiedCount > 0 {
-		err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(&at)
+		err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(at)
 		if err != nil {
 			logger.ErrorLog(err)
 			return nil, resterrors.NewInternalServerError("Failed to retrieve updated document", "", err)
 		}
 	}
-	return &at, nil
+
+	return at, nil
 }
 
 func (r AccessToken) DeactivateToken(token string) resterrors.RestError {
