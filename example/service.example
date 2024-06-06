@@ -1,0 +1,15 @@
+[Unit]
+Description=BongoChat oauth service in golang
+After=multi-user.target
+
+[Service]
+ExecStart=/opt/oauth/main
+WorkingDirectory=/opt/oauth
+User=username
+Group=nginx
+Type=simple
+RestartSec=5s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
