@@ -45,7 +45,7 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		at.IPAddress = request.IPAddress
 		at.IsActive = true
 
-		if request.PhoneNumber == "01200000000" {
+		if request.PhoneNumber == "8801200000000" {
 			at.IsVerified = true
 		}
 
