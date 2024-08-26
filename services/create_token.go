@@ -47,6 +47,8 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 
 		if request.PhoneNumber == "8801200000000" {
 			at.IsVerified = true
+		} else {
+			at.IsVerified = false
 		}
 
 		// Save the new access token in MongoDB:

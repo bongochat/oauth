@@ -58,6 +58,7 @@ func (at *AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 			"ipaddress":    at.IPAddress,
 			"isactive":     at.IsActive,
 			"datecreated":  at.DateCreated,
+			"isverified":   at.IsVerified,
 		},
 	}
 	options := options.Update().SetUpsert(true)
