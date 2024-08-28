@@ -17,17 +17,19 @@ const (
 )
 
 type AccessToken struct {
-	AccessToken  string    `json:"access_token"`
-	UserId       int64     `json:"user_id"`
-	ClientId     string    `json:"client_id,omitempty"`
-	ClientSecret string    `json:"client_secret,omitempty"`
-	DeviceId     string    `json:"device_id"`
-	DeviceType   string    `json:"device_type"`
-	DeviceModel  string    `json:"device_model"`
-	IPAddress    net.IP    `json:"ip_address"`
-	IsVerified   bool      `json:"is_verified"`
-	IsActive     bool      `json:"is_active"`
-	DateCreated  time.Time `json:"date_created"`
+	AccessToken  string    `json:"access_token" bson:"accesstoken"`
+	UserId       int64     `json:"user_id" bson:"userid"`
+	PhoneNumber  string    `json:"phone_number" bson:"phonenumber"`
+	ClientId     string    `json:"client_id,omitempty" bson:"clientid,omitempty"`
+	ClientSecret string    `json:"client_secret,omitempty" bson:"clientsecret,omitempty"`
+	DeviceId     string    `json:"device_id" bson:"deviceid"`
+	DeviceType   string    `json:"device_type" bson:"devicetype"`
+	DeviceModel  string    `json:"device_model" bson:"devicemodel"`
+	IPAddress    net.IP    `json:"ip_address" bson:"ipaddress"`
+	IsVerified   bool      `json:"is_verified" bson:"isverified"`
+	IsActive     bool      `json:"is_active" bson:"isactive"`
+	CreatedAt    time.Time `json:"created_at" bson:"datecreated"`
+	UpdatedAt    time.Time `json:"updated_at" bson:"dateupdated"`
 }
 
 type AccessTokenRequest struct {

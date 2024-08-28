@@ -2,6 +2,7 @@ package access_token
 
 import (
 	"encoding/json"
+	"net"
 	"time"
 
 	"github.com/bongochat/oauth/users"
@@ -17,7 +18,9 @@ type TokenResponse struct {
 	DeviceId    string    `json:"device_id"`
 	IsVerified  bool      `json:"is_verified"`
 	IsActive    bool      `json:"is_active"`
-	DateCreated time.Time `json:"date_created"`
+	IPAddress   net.IP    `json:"ip_address"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type ClientTokenResponse struct {
@@ -25,7 +28,7 @@ type ClientTokenResponse struct {
 	ClientId    string    `json:"client_id"`
 	IsVerified  bool      `json:"is_verified"`
 	IsActive    bool      `json:"is_active"`
-	DateCreated time.Time `json:"date_created"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func (at *AccessToken) Marshall() interface{} {

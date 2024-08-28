@@ -38,18 +38,14 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		// Generate a new access token:
 		token, _ := at.Generate()
 		at.AccessToken = token
-		at.DateCreated = time.Now()
+		at.CreatedAt = time.Now()
+		at.UpdatedAt = time.Now()
 		at.DeviceId = request.DeviceId
 		at.DeviceType = request.DeviceType
 		at.DeviceModel = request.DeviceModel
 		at.IPAddress = request.IPAddress
 		at.IsActive = true
-
-		if request.PhoneNumber == "8801200000000" {
-			at.IsVerified = true
-		} else {
-			at.IsVerified = false
-		}
+		at.PhoneNumber = request.PhoneNumber
 
 		// Save the new access token in MongoDB:
 		result, err := at.CreateToken()
@@ -82,7 +78,8 @@ func (s *tokenCreateService) CreateClientToken(request access_token.AccessTokenR
 		// Generate a new access token:
 		token, _ := at.Generate()
 		at.AccessToken = token
-		at.DateCreated = time.Now()
+		at.CreatedAt = time.Now()
+		at.UpdatedAt = time.Now()
 		at.DeviceId = request.DeviceId
 		at.DeviceType = request.DeviceType
 		at.DeviceModel = request.DeviceModel
