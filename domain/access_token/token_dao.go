@@ -145,3 +145,15 @@ func (r AccessToken) DeactivateToken(token string) resterrors.RestError {
 	}
 	return nil
 }
+
+func (r AccessToken) DeleteToken(token string) resterrors.RestError {
+	filter := bson.M{"accesstoken": token}
+
+	// Using DeleteOne to remove the document from the collection
+	_, err := mongodb.GetCollections().DeleteOne(context.Background(), filter)
+	if err != nil {
+		logger.ErrorLog(err)
+		return resterrors.NewInternalServerError("Database error", "", err)
+	}
+	return nil
+}

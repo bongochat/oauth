@@ -1,4 +1,4 @@
-package delete_token
+package deactivate_token
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DeleteAccessToken(c *gin.Context) {
+func DeactivateAccessToken(c *gin.Context) {
 	accessTokenString := c.Request.Header.Get("Authorization")
 	if accessTokenString == "" {
 		restErr := resterrors.NewBadRequestError("Invalid header information", "")
@@ -32,7 +32,7 @@ func DeleteAccessToken(c *gin.Context) {
 		logger.RestErrorLog(err)
 		return
 	}
-	err = services.TokenDeleteService.DeleteToken(userId, accessTokenId)
+	err = services.TokenDeactivateService.DeactivateToken(userId, accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		logger.RestErrorLog(err)

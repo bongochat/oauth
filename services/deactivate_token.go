@@ -9,16 +9,16 @@ import (
 )
 
 var (
-	TokenDeleteService tokenDeleteServiceInterface = &tokenDeleteService{}
+	TokenDeactivateService tokenDeactivateServiceInterface = &tokenDeactivateService{}
 )
 
-type tokenDeleteService struct{}
+type tokenDeactivateService struct{}
 
-type tokenDeleteServiceInterface interface {
-	DeleteToken(int64, string) resterrors.RestError
+type tokenDeactivateServiceInterface interface {
+	DeactivateToken(int64, string) resterrors.RestError
 }
 
-func (s *tokenDeleteService) DeleteToken(userId int64, accessTokenId string) resterrors.RestError {
+func (s *tokenDeactivateService) DeactivateToken(userId int64, accessTokenId string) resterrors.RestError {
 	at := &access_token.AccessToken{}
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
@@ -30,7 +30,7 @@ func (s *tokenDeleteService) DeleteToken(userId int64, accessTokenId string) res
 		logger.RestErrorLog(err)
 		return err
 	}
-	err = at.DeleteToken(accessTokenId)
+	err = at.DeactivateToken(accessTokenId)
 	if err != nil {
 		logger.RestErrorLog(err)
 		return err

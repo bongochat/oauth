@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bongochat/oauth/controllers/create_token"
+	"github.com/bongochat/oauth/controllers/deactivate_token"
 	"github.com/bongochat/oauth/controllers/delete_token"
 	"github.com/bongochat/oauth/controllers/devices"
 	"github.com/bongochat/oauth/controllers/verify_device"
@@ -49,7 +50,8 @@ func APIUrls() {
 	tokenAPI.POST("create-token/", create_token.CreateAccessToken)
 	tokenAPI.POST(":user_id/verify-device/", verify_device.VerifyDevice)
 	tokenAPI.GET(":user_id/verify-token/", verify_token.VerifyAccessToken)
-	tokenAPI.GET(":user_id/logout/", delete_token.DeleteAccessToken)
+	tokenAPI.GET(":user_id/logout/", deactivate_token.DeactivateAccessToken)
+	tokenAPI.GET(":user_id/remove-device/", delete_token.DeleteAccessToken)
 	tokenAPI.GET(":user_id/device-list/", devices.DeviceList)
 
 	clientTokenAPI := router.Group("/api/v1/client")
