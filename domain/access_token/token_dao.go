@@ -22,7 +22,7 @@ func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, rest
 	filter := bson.M{"accesstoken": token}
 	if err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(&result); err != nil {
 		logger.ErrorLog(err)
-		return nil, resterrors.NewInternalServerError("Access token not found", "", err)
+		return nil, resterrors.NewUnauthorizedError("Access token not found", "")
 	}
 	if userId != result.UserId {
 		logger.ErrorMsgLog(fmt.Sprintf("Access token not matching with the given user=%d", result.UserId))
@@ -41,7 +41,7 @@ func (r AccessToken) VerifyClientToken(token string) (*AccessToken, resterrors.R
 	filter := bson.M{"accesstoken": token}
 	if err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(&result); err != nil {
 		logger.ErrorLog(err)
-		return nil, resterrors.NewInternalServerError("Access token not found", "", err)
+		return nil, resterrors.NewUnauthorizedError("Access token not found", "")
 	}
 	return &result, nil
 }
