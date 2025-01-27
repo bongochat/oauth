@@ -56,7 +56,7 @@
 
 > | http code     | content-type                      | response                                                            |
 > |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `application/json`                | `{"result": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9","user_id": 5,"date_created": "2024-0115T10:16:24.084Z"},"status": 200}`         |
+> | `200`         | `application/json`                | `{"data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9","user_id": 5,"date_created": "2024-0115T10:16:24.084Z"},"status": 200}`         |
 > | `401`         | `application/json`                | `{"message": "Wrong password","display_message": "Wrong password","status": 401,"error": "unauthorized","causes": null}`                            |
 > | `405`         | `text/html;charset=utf-8`         | None                                                                |
 
