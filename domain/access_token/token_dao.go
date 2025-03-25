@@ -3,6 +3,7 @@ package access_token
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/bongochat/oauth/clients/mongodb"
 	"github.com/bongochat/oauth/logger"
@@ -56,9 +57,9 @@ func (at *AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Failed to retrieve existing document", "", err)
 	}
-
+	testPhoneNumber := os.Getenv("TEST_PHONE_NUMBER")
 	// Determine the isVerified status based on the logic provided
-	if at.PhoneNumber == "8801200000000" {
+	if at.PhoneNumber == testPhoneNumber {
 		at.IsVerified = true
 	} else if existingToken.IsVerified {
 		at.IsVerified = true
