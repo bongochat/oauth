@@ -28,7 +28,7 @@ func CreateAccessToken(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"data":   accessToken.TokenMarshall(user),
+		"result": accessToken.TokenMarshall(user),
 		"status": http.StatusCreated,
 	})
 }
@@ -50,7 +50,7 @@ func CreateClientAccessToken(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"data":   accessToken.ClientTokenMarshall(client),
+		"result": accessToken.ClientTokenMarshall(client),
 		"status": http.StatusCreated,
 	})
 }

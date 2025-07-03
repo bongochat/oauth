@@ -32,7 +32,7 @@ func VerifyDevice(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"data":   accessToken,
+		"result": accessToken,
 		"status": http.StatusOK,
 	})
 }

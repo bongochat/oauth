@@ -33,7 +33,7 @@ func DeviceList(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"data":   devices,
+		"result": devices,
 		"status": http.StatusOK,
 	})
 }
