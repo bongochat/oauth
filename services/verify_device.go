@@ -25,7 +25,7 @@ func (service *deviceService) VerifyDevice(userId int64, tokenId string) (*verif
 		logger.ErrorMsgLog("Access token is required")
 		return nil, resterrors.NewUnauthorizedError("Access token is required", "")
 	}
-	_, err := TokenVerifyService.VerifyToken(userId, accessTokenId)
+	_, err := TokenVerifyService.VerifyToken(accessTokenId)
 	if err != nil {
 		logger.RestErrorLog(err)
 		return nil, err

@@ -2,7 +2,6 @@ package access_token
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/bongochat/oauth/clients/mongodb"
@@ -13,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, resterrors.RestError) {
+func (r AccessToken) VerifyToken(token string) (*AccessToken, resterrors.RestError) {
 	var result AccessToken
 	err := VerifyTokenString(token)
 	if err != nil {
@@ -24,10 +23,6 @@ func (r AccessToken) VerifyToken(userId int64, token string) (*AccessToken, rest
 	if err := mongodb.GetCollections().FindOne(context.Background(), filter).Decode(&result); err != nil {
 		logger.ErrorLog(err)
 		return nil, resterrors.NewUnauthorizedError("Access token not found", "")
-	}
-	if userId != result.UserId {
-		logger.ErrorMsgLog(fmt.Sprintf("Access token not matching with the given user=%d", result.UserId))
-		return nil, resterrors.NewUnauthorizedError("Access token not matching with the given user", "")
 	}
 	return &result, nil
 }

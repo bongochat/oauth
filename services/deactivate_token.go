@@ -15,17 +15,17 @@ var (
 type tokenDeactivateService struct{}
 
 type tokenDeactivateServiceInterface interface {
-	DeactivateToken(int64, string) resterrors.RestError
+	DeactivateToken(string) resterrors.RestError
 }
 
-func (s *tokenDeactivateService) DeactivateToken(userId int64, accessTokenId string) resterrors.RestError {
+func (s *tokenDeactivateService) DeactivateToken(accessTokenId string) resterrors.RestError {
 	at := &access_token.AccessToken{}
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
 		logger.ErrorMsgLog("Access token is required")
 		return resterrors.NewUnauthorizedError("Access token is required", "")
 	}
-	_, err := TokenVerifyService.VerifyToken(userId, accessTokenId)
+	_, err := TokenVerifyService.VerifyToken(accessTokenId)
 	if err != nil {
 		logger.RestErrorLog(err)
 		return err
