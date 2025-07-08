@@ -1,6 +1,7 @@
 package create_token
 
 import (
+	"fmt"
 	"net/http"
 
 	atDomain "github.com/bongochat/oauth/domain/access_token"
@@ -19,6 +20,7 @@ func CreateAccessToken(c *gin.Context) {
 		logger.RestErrorLog(restErr)
 		return
 	}
+	fmt.Println(request.PhoneNumber)
 
 	accessToken, user, err := services.TokenCreateService.CreateToken(request)
 	if err != nil {

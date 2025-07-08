@@ -50,7 +50,7 @@ func APIUrls() {
 	tokenAPI.POST("create-token/", create_token.CreateAccessToken)
 	tokenAPI.POST(":user_id/verify-device/", verify_device.VerifyDevice)
 	tokenAPI.GET("verify-token/", verify_token.VerifyAccessToken)
-	tokenAPI.GET(":user_id/logout/", deactivate_token.DeactivateAccessToken)
+	tokenAPI.GET("logout/", deactivate_token.DeactivateAccessToken)
 	tokenAPI.GET(":user_id/remove-device/", delete_token.DeleteAccessToken)
 	tokenAPI.GET(":user_id/device-list/", devices.DeviceList)
 

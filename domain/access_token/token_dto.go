@@ -67,6 +67,9 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 		return resterrors.NewBadRequestError("Invalid grant type", "")
 	}
 	if at.GrantType == grantTypePassword {
+		if at.PhoneNumber == "" {
+			return resterrors.NewBadRequestError("Please provide phone number", "")
+		}
 		if at.DeviceId == "" {
 			return resterrors.NewBadRequestError("Please provide device ID", "")
 		}
