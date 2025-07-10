@@ -52,13 +52,16 @@ type AccessTokenRequest struct {
 }
 
 type RegistrationRequest struct {
-	DeviceId    string `json:"device_id"`
-	DeviceType  string `json:"device_type"`
-	DeviceModel string `json:"device_model"`
-	IPAddress   net.IP `json:"ip_address"`
-	CountryId   int8   `json:"country_id"`
-	PhoneNumber string `json:"phone_number"`
-	Password    string `json:"password"`
+	DeviceId    string  `json:"device_id"`
+	DeviceType  string  `json:"device_type"`
+	DeviceModel string  `json:"device_model"`
+	IPAddress   net.IP  `json:"ip_address"`
+	AppVersion  string  `json:"app_version"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	CountryId   int8    `json:"country_id"`
+	PhoneNumber string  `json:"phone_number"`
+	Password    string  `json:"password"`
 }
 
 func (at *AccessToken) Validate() resterrors.RestError {

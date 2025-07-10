@@ -3,6 +3,7 @@ package users
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 
@@ -21,9 +22,16 @@ type User struct {
 }
 
 type UserRegistrationRequest struct {
-	CountryId   int8   `json:"country_id"`
-	PhoneNumber string `json:"phone_number"`
-	Password    string `json:"password"`
+	CountryId   int8    `json:"country_id"`
+	PhoneNumber string  `json:"phone_number"`
+	Password    string  `json:"password"`
+	DeviceId    string  `json:"device_id"`
+	DeviceType  string  `json:"device_type"`
+	DeviceModel string  `json:"device_model"`
+	IPAddress   net.IP  `json:"ip_address"`
+	AppVersion  string  `json:"app_version"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
 }
 
 type UserRegistrationResponse struct {
@@ -44,11 +52,18 @@ var (
 	userClient             = resty.New().SetBaseURL(userHostUrl)
 )
 
-func RegisterUser(country_id int8, phone_number string, password string) (*User, resterrors.RestError) {
+func RegisterUser(country_id int8, phone_number string, password string, deviceId string, deviceType string, deviceModel string, ipAddress net.IP, appVersion string, latitude float64, longitude float64) (*User, resterrors.RestError) {
 	request := UserRegistrationRequest{
 		CountryId:   country_id,
 		PhoneNumber: phone_number,
 		Password:    password,
+		DeviceId:    deviceId,
+		DeviceType:  deviceType,
+		DeviceModel: deviceModel,
+		IPAddress:   ipAddress,
+		AppVersion:  appVersion,
+		Latitude:    latitude,
+		Longitude:   longitude,
 	}
 
 	response, err := userClient.R().

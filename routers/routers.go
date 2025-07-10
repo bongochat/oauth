@@ -47,7 +47,7 @@ func APIUrls() {
 	})
 
 	tokenAPI := router.Group("/api/v1/")
-	tokenAPI.POST("register-token/", create_token.CreateAccessToken)
+	tokenAPI.POST("register/", create_token.CreateAccessToken)
 	tokenAPI.POST("get-token/", create_token.GetAccessToken)
 	tokenAPI.POST(":user_id/verify-device/", verify_device.VerifyDevice)
 	tokenAPI.GET("verify-token/", verify_token.VerifyAccessToken)

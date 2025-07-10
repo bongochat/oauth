@@ -27,7 +27,7 @@ func (s *tokenCreateService) CreateToken(request access_token.RegistrationReques
 		return nil, nil, err
 	}
 
-	user, err := users.RegisterUser(request.CountryId, request.PhoneNumber, request.Password)
+	user, err := users.RegisterUser(request.CountryId, request.PhoneNumber, request.Password, request.DeviceId, request.DeviceType, request.DeviceModel, request.IPAddress, request.AppVersion, request.Latitude, request.Longitude)
 	if err != nil {
 		fmt.Println("REGISTRATION ERROR", err)
 		logger.RestErrorLog(err)
