@@ -33,7 +33,7 @@
 ##### Example cURL
 
 > ```javascript
->  curl -X POST -H "Content-Type: application/json" --data @post.json https://oauth.bongo.chat/api/oauth/access-token/v1/
+>  curl -X POST -H "Content-Type: application/json" --data @post.json https://oauth.bongochat.app/api/oauth/access-token/v1/
 > ```
 
 </details>
