@@ -40,6 +40,8 @@ type AccessTokenRequest struct {
 	DeviceModel string `json:"device_model"`
 	IPAddress   net.IP `json:"ip_address"`
 
+	CountryId   int8   `json:"country_id"`
+	CountryCode string `json:"country_code"`
 	// used for password grant type
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
@@ -49,10 +51,42 @@ type AccessTokenRequest struct {
 	ClientSecret string `json:"client_secret"`
 }
 
+type RegistrationRequest struct {
+	DeviceId    string `json:"device_id"`
+	DeviceType  string `json:"device_type"`
+	DeviceModel string `json:"device_model"`
+	IPAddress   net.IP `json:"ip_address"`
+	CountryId   int8   `json:"country_id"`
+	PhoneNumber string `json:"phone_number"`
+	Password    string `json:"password"`
+}
+
 func (at *AccessToken) Validate() resterrors.RestError {
 	at.AccessToken = strings.TrimSpace(at.AccessToken)
 	if at.AccessToken == "" {
 		return resterrors.NewBadRequestError("Invalid access token", "")
+	}
+	return nil
+}
+
+func (rr *RegistrationRequest) ValidateRegistration() resterrors.RestError {
+	if rr.CountryId <= 0 {
+		return resterrors.NewBadRequestError("Please provide country id", "")
+	}
+	if rr.PhoneNumber == "" {
+		return resterrors.NewBadRequestError("Please provide phone number", "")
+	}
+	if rr.DeviceId == "" {
+		return resterrors.NewBadRequestError("Please provide device ID", "")
+	}
+	if rr.DeviceType == "" {
+		return resterrors.NewBadRequestError("Please provide device type", "")
+	}
+	if rr.DeviceModel == "" {
+		return resterrors.NewBadRequestError("Please provide device model", "")
+	}
+	if rr.IPAddress == nil {
+		return resterrors.NewBadRequestError("Please provide IP address", "")
 	}
 	return nil
 }

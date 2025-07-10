@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/bongochat/oauth/domain/access_token"
@@ -16,11 +17,47 @@ var (
 type tokenCreateService struct{}
 
 type tokenCreateServiceInterface interface {
-	CreateToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *users.User, resterrors.RestError)
+	CreateToken(access_token.RegistrationRequest) (*access_token.AccessToken, *users.User, resterrors.RestError)
+	GetToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *users.User, resterrors.RestError)
 	CreateClientToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *users.Client, resterrors.RestError)
 }
 
-func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, *users.User, resterrors.RestError) {
+func (s *tokenCreateService) CreateToken(request access_token.RegistrationRequest) (*access_token.AccessToken, *users.User, resterrors.RestError) {
+	if err := request.ValidateRegistration(); err != nil {
+		return nil, nil, err
+	}
+
+	user, err := users.RegisterUser(request.CountryId, request.PhoneNumber, request.Password)
+	if err != nil {
+		fmt.Println("REGISTRATION ERROR", err)
+		logger.RestErrorLog(err)
+		return nil, nil, err
+	}
+	fmt.Println("USER: ", user.PhoneNumber)
+	at := access_token.GetNewAccessToken(user.Id, request.DeviceId)
+	// Generate a new access token:
+	token, _ := at.Generate()
+	at.AccessToken = token
+	at.CreatedAt = time.Now()
+	at.UpdatedAt = time.Now()
+	at.DeviceId = request.DeviceId
+	at.DeviceType = request.DeviceType
+	at.DeviceModel = request.DeviceModel
+	at.IPAddress = request.IPAddress
+	at.IsActive = true
+	at.IsVerified = true
+	at.PhoneNumber = request.PhoneNumber
+
+	// Save the new access token in MongoDB:
+	result, err := at.CreateToken()
+	if err != nil {
+		logger.RestErrorLog(err)
+		return nil, nil, err
+	}
+	return result, user, nil
+}
+
+func (s *tokenCreateService) GetToken(request access_token.AccessTokenRequest) (*access_token.AccessToken, *users.User, resterrors.RestError) {
 	if err := request.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -48,7 +85,7 @@ func (s *tokenCreateService) CreateToken(request access_token.AccessTokenRequest
 		at.PhoneNumber = request.PhoneNumber
 
 		// Save the new access token in MongoDB:
-		result, err := at.CreateToken()
+		result, err := at.GetToken()
 		if err != nil {
 			logger.RestErrorLog(err)
 			return nil, nil, err

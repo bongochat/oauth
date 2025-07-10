@@ -13,7 +13,7 @@ import (
 )
 
 func CreateAccessToken(c *gin.Context) {
-	var request atDomain.AccessTokenRequest
+	var request atDomain.RegistrationRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		restErr := resterrors.NewBadRequestError("Invalid request", "")
 		c.JSON(restErr.Status(), restErr)
@@ -23,6 +23,29 @@ func CreateAccessToken(c *gin.Context) {
 	fmt.Println(request.PhoneNumber)
 
 	accessToken, user, err := services.TokenCreateService.CreateToken(request)
+	if err != nil {
+		c.JSON(err.Status(), err)
+		logger.RestErrorLog(err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"result": accessToken.TokenMarshall(user),
+		"status": http.StatusCreated,
+	})
+}
+
+func GetAccessToken(c *gin.Context) {
+	var request atDomain.AccessTokenRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		restErr := resterrors.NewBadRequestError("Invalid request", "")
+		c.JSON(restErr.Status(), restErr)
+		logger.RestErrorLog(restErr)
+		return
+	}
+	fmt.Println(request.PhoneNumber)
+
+	accessToken, user, err := services.TokenCreateService.GetToken(request)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		logger.RestErrorLog(err)

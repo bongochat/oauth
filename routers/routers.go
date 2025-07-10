@@ -37,7 +37,7 @@ func APIUrls() {
 	})
 
 	router.GET("", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "https://bongo.chat")
+		c.Redirect(http.StatusMovedPermanently, "https://bongochat.com.bd/")
 	})
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -47,7 +47,8 @@ func APIUrls() {
 	})
 
 	tokenAPI := router.Group("/api/v1/")
-	tokenAPI.POST("create-token/", create_token.CreateAccessToken)
+	tokenAPI.POST("register-token/", create_token.CreateAccessToken)
+	tokenAPI.POST("get-token/", create_token.GetAccessToken)
 	tokenAPI.POST(":user_id/verify-device/", verify_device.VerifyDevice)
 	tokenAPI.GET("verify-token/", verify_token.VerifyAccessToken)
 	tokenAPI.GET("logout/", deactivate_token.DeactivateAccessToken)
