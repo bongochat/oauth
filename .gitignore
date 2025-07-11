@@ -24,3 +24,4 @@ conf.toml
 logs/
 .env
 key/
+/oauth

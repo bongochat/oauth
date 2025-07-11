@@ -3,6 +3,7 @@ package access_token
 import (
 	"fmt"
 	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -52,6 +53,7 @@ type AccessTokenRequest struct {
 }
 
 type RegistrationRequest struct {
+	SecretKey   string  `json:"secret_key"`
 	DeviceId    string  `json:"device_id"`
 	DeviceType  string  `json:"device_type"`
 	DeviceModel string  `json:"device_model"`
@@ -73,6 +75,10 @@ func (at *AccessToken) Validate() resterrors.RestError {
 }
 
 func (rr *RegistrationRequest) ValidateRegistration() resterrors.RestError {
+	secretKey := os.Getenv("REGISTRATION_SECRET_KEY")
+	if rr.SecretKey == "" || rr.SecretKey != secretKey {
+		return resterrors.NewUnauthorizedError("Invalid or missing secret key", "")
+	}
 	if rr.CountryId <= 0 {
 		return resterrors.NewBadRequestError("Please provide country id", "")
 	}
