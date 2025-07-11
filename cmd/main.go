@@ -26,7 +26,4 @@ func main() {
 	logger.InfoLog("OAuth server started...")
 	// load endpoints
 	routers.APIUrls()
-
-	// close the logging channel
-	logger.Close()
 }
