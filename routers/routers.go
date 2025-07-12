@@ -49,7 +49,7 @@ func APIUrls() {
 	tokenAPI := router.Group("/api/v1/")
 	tokenAPI.POST("register/", create_token.CreateAccessToken)
 	tokenAPI.POST("get-token/", create_token.GetAccessToken)
-	tokenAPI.POST(":user_id/verify-device/", verify_device.VerifyDevice)
+	tokenAPI.POST("user/:user_id/verify-device/", verify_device.VerifyDevice)
 	tokenAPI.GET("verify-token/", verify_token.VerifyAccessToken)
 	tokenAPI.GET("logout/", deactivate_token.DeactivateAccessToken)
 	tokenAPI.GET(":user_id/remove-device/", delete_token.DeleteAccessToken)

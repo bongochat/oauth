@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,18 +19,19 @@ var (
 // initialize file logger once
 func initFileLogger() {
 	once.Do(func() {
-		// Create logs directory if it doesn't exist
+		wd, _ := os.Getwd()
+		fmt.Println("Current Working Dir:", wd)
+		fmt.Println("Resolved Log File Path:", logFilePath)
+
 		if err := os.MkdirAll(filepath.Dir(logFilePath), os.ModePerm); err != nil {
 			log.Fatalf("Failed to create log directory: %v", err)
 		}
 
-		// Open log file in append mode, create if not exists
 		file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			log.Fatalf("Failed to open log file: %v", err)
 		}
 
-		// Create a new logger instance
 		fileLogger = log.New(file, "", log.LstdFlags|log.Lshortfile)
 	})
 }
@@ -54,6 +56,7 @@ func ErrorLog(err error) {
 
 // RestErrorLog logs custom RestError
 func RestErrorLog(err resterrors.RestError) {
+	fmt.Println("ERROR LOG: ", err)
 	initFileLogger()
 	fileLogger.Println("[ERROR] ", err)
 }

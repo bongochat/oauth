@@ -16,6 +16,7 @@ func CreateAccessToken(c *gin.Context) {
 	var request atDomain.RegistrationRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		restErr := resterrors.NewBadRequestError("Invalid request", "")
+		fmt.Println(restErr)
 		c.JSON(restErr.Status(), restErr)
 		logger.RestErrorLog(restErr)
 		return
@@ -52,9 +53,9 @@ func GetAccessToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"result": accessToken.TokenMarshall(user),
-		"status": http.StatusCreated,
+		"status": http.StatusOK,
 	})
 }
 
