@@ -3,60 +3,45 @@ package logger
 import (
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
-	"sync"
 
 	"github.com/bongochat/utils/resterrors"
+	"github.com/getsentry/sentry-go"
 )
 
-var (
-	fileLogger  *log.Logger
-	once        sync.Once
-	logFilePath = filepath.Join("logs", "debug.log") // logs/debug.log
-)
-
-// initialize file logger once
-func initFileLogger() {
-	once.Do(func() {
-		wd, _ := os.Getwd()
-		fmt.Println("Current Working Dir:", wd)
-		fmt.Println("Resolved Log File Path:", logFilePath)
-
-		if err := os.MkdirAll(filepath.Dir(logFilePath), os.ModePerm); err != nil {
-			log.Fatalf("Failed to create log directory: %v", err)
-		}
-
-		file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Fatalf("Failed to open log file: %v", err)
-		}
-
-		fileLogger = log.New(file, "", log.LstdFlags|log.Lshortfile)
+func InitSentry(dsn string, env string, release string) {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:         dsn,
+		Environment: env,
+		Release:     release,
 	})
+	if err != nil {
+		log.Fatalf("sentry.Init failed: %v", err)
+	}
 }
 
 // InfoLog writes an info message
 func InfoLog(message string) {
-	initFileLogger()
-	fileLogger.Println("[INFO] " + message)
+	sentry.CaptureMessage("[INFO] " + message)
 }
 
 // ErrorMsgLog logs error messages
 func ErrorMsgLog(message string) {
-	initFileLogger()
-	fileLogger.Println("[ERROR] " + message)
+	sentry.CaptureMessage("[INFO] " + message)
 }
 
 // ErrorLog logs error objects
 func ErrorLog(err error) {
-	initFileLogger()
-	fileLogger.Println("[ERROR] ", err)
+	sentry.CaptureException(err)
 }
 
 // RestErrorLog logs custom RestError
 func RestErrorLog(err resterrors.RestError) {
 	fmt.Println("ERROR LOG: ", err)
-	initFileLogger()
-	fileLogger.Println("[ERROR] ", err)
+	sentry.WithScope(func(scope *sentry.Scope) {
+		scope.SetTag("type", "rest_error")
+		scope.SetExtra("status", err.Status())
+		scope.SetExtra("message", err.Message())
+		scope.SetExtra("error", err.Error())
+		sentry.CaptureException(err)
+	})
 }
