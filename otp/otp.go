@@ -14,7 +14,7 @@ type OTPVerifyPayload struct {
 	OTP         string `json:"otp"`
 }
 
-func VerifyOTP(countryCode string, phoneNumber string, otp string) bool {
+func VerifyOTP(countryCode string, phoneNumber string, otp string, clientToken string) bool {
 	otpHostUrl := os.Getenv("OTP_HOST_URL")
 	otpVerifyApiUrl := os.Getenv("OTP_VERIFY_URL")
 
@@ -26,12 +26,9 @@ func VerifyOTP(countryCode string, phoneNumber string, otp string) bool {
 		OTP:         otp,
 	}
 
-	// Replace this with your real token mechanism
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXZpY2VfaWQiOiIiLCJ1c2VyX2lkIjowfQ.Z5orMOpITTFXw_cnKooX2oHSNDEvMrLlPmyCh_fDv-Q"
-
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
-		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("Authorization", "Bearer "+clientToken).
 		SetBody(payload).
 		Post(otpVerifyApiUrl)
 

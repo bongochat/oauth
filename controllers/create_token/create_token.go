@@ -13,6 +13,15 @@ import (
 )
 
 func CreateAccessToken(c *gin.Context) {
+	clientTokenString := c.Request.Header.Get("Authorization")
+	if clientTokenString == "" {
+		restErr := resterrors.NewBadRequestError("Invalid header information", "")
+		c.JSON(http.StatusBadRequest, restErr)
+		logger.RestErrorLog(restErr)
+		return
+	}
+	clientToken := clientTokenString[len("Bearer "):]
+
 	var request atDomain.RegistrationRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		restErr := resterrors.NewBadRequestError("Invalid request", "")
@@ -23,7 +32,7 @@ func CreateAccessToken(c *gin.Context) {
 	}
 	fmt.Println(request.PhoneNumber)
 
-	accessToken, user, err := services.TokenCreateService.CreateToken(request)
+	accessToken, user, err := services.TokenCreateService.CreateToken(request, clientToken)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		logger.RestErrorLog(err)

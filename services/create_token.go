@@ -18,17 +18,17 @@ var (
 type tokenCreateService struct{}
 
 type tokenCreateServiceInterface interface {
-	CreateToken(access_token.RegistrationRequest) (*access_token.AccessToken, *users.User, resterrors.RestError)
+	CreateToken(access_token.RegistrationRequest, string) (*access_token.AccessToken, *users.User, resterrors.RestError)
 	GetToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *users.User, resterrors.RestError)
 	CreateClientToken(access_token.AccessTokenRequest) (*access_token.AccessToken, *users.Client, resterrors.RestError)
 }
 
-func (s *tokenCreateService) CreateToken(request access_token.RegistrationRequest) (*access_token.AccessToken, *users.User, resterrors.RestError) {
+func (s *tokenCreateService) CreateToken(request access_token.RegistrationRequest, clientToken string) (*access_token.AccessToken, *users.User, resterrors.RestError) {
 	if err := request.ValidateRegistration(); err != nil {
 		return nil, nil, err
 	}
 
-	otpStatus := otp.VerifyOTP(request.CountryCode, request.PhoneNumber, request.OTP)
+	otpStatus := otp.VerifyOTP(request.CountryCode, request.PhoneNumber, request.OTP, clientToken)
 	if !otpStatus {
 		otpErr := resterrors.NewUnauthorizedError("Invalid OTP", "Invalid OTP")
 		return nil, nil, otpErr
