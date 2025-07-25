@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script_stop: true
           script: |
-            cd /opt/oauth
+            cd /opt/services/oauth
             git pull origin main
             chmod +x ./deploy.sh
             ./deploy.sh
