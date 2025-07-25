@@ -15,6 +15,8 @@ git pull origin main
 
 cd "$SERVICE_DIR" || { echo "❌ Failed to cd into $SERVICE_DIR"; exit 1; }
 echo "📦 Building Project..."
-docker compose up -d --build
+go build cmd/main.go
+
+sudo systemctl restart oauth.service
 
 echo "✅ Deployment complete at $(date)"
