@@ -6,6 +6,7 @@ import (
 
 	"github.com/bongochat/oauth/domain/access_token"
 	"github.com/bongochat/oauth/logger"
+	"github.com/bongochat/oauth/otp"
 	"github.com/bongochat/oauth/users"
 	"github.com/bongochat/utils/resterrors"
 )
@@ -26,6 +27,14 @@ func (s *tokenCreateService) CreateToken(request access_token.RegistrationReques
 	if err := request.ValidateRegistration(); err != nil {
 		return nil, nil, err
 	}
+
+	otpStatus := otp.VerifyOTP(request.CountryCode, request.PhoneNumber, request.OTP)
+	if !otpStatus {
+		otpErr := resterrors.NewUnauthorizedError("Invalid OTP", "Invalid OTP")
+		return nil, nil, otpErr
+	}
+
+	request.PhoneNumber = request.CountryCode + request.PhoneNumber
 
 	user, err := users.RegisterUser(request.CountryId, request.PhoneNumber, request.Password, request.DeviceId, request.DeviceType, request.DeviceModel, request.IPAddress, request.AppVersion, request.Latitude, request.Longitude)
 	if err != nil {

@@ -3,7 +3,6 @@ package access_token
 import (
 	"fmt"
 	"net"
-	"os"
 	"strings"
 	"time"
 
@@ -53,7 +52,6 @@ type AccessTokenRequest struct {
 }
 
 type RegistrationRequest struct {
-	SecretKey   string  `json:"secret_key"`
 	DeviceId    string  `json:"device_id"`
 	DeviceType  string  `json:"device_type"`
 	DeviceModel string  `json:"device_model"`
@@ -62,8 +60,10 @@ type RegistrationRequest struct {
 	Latitude    float64 `json:"latitude"`
 	Longitude   float64 `json:"longitude"`
 	CountryId   int8    `json:"country_id"`
+	CountryCode string  `json:"country_code"`
 	PhoneNumber string  `json:"phone_number"`
 	Password    string  `json:"password"`
+	OTP         string  `json:"otp"`
 }
 
 func (at *AccessToken) Validate() resterrors.RestError {
@@ -75,12 +75,11 @@ func (at *AccessToken) Validate() resterrors.RestError {
 }
 
 func (rr *RegistrationRequest) ValidateRegistration() resterrors.RestError {
-	secretKey := os.Getenv("REGISTRATION_SECRET_KEY")
-	if rr.SecretKey == "" || rr.SecretKey != secretKey {
-		return resterrors.NewUnauthorizedError("Invalid or missing secret key", "")
-	}
 	if rr.CountryId <= 0 {
 		return resterrors.NewBadRequestError("Please provide country id", "")
+	}
+	if rr.CountryCode == "" {
+		return resterrors.NewBadRequestError("Please provide country code", "")
 	}
 	if rr.PhoneNumber == "" {
 		return resterrors.NewBadRequestError("Please provide phone number", "")
@@ -96,6 +95,9 @@ func (rr *RegistrationRequest) ValidateRegistration() resterrors.RestError {
 	}
 	if rr.IPAddress == nil {
 		return resterrors.NewBadRequestError("Please provide IP address", "")
+	}
+	if rr.OTP == "" {
+		return resterrors.NewBadRequestError("Please provide OTP", "")
 	}
 	return nil
 }
