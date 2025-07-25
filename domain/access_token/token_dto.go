@@ -84,6 +84,14 @@ func (rr *RegistrationRequest) ValidateRegistration() resterrors.RestError {
 	if rr.PhoneNumber == "" {
 		return resterrors.NewBadRequestError("Please provide phone number", "")
 	}
+	// Normalize inputs (optional)
+	countryCode := strings.TrimSpace(rr.CountryCode)
+	phoneNumber := strings.TrimSpace(rr.PhoneNumber)
+
+	// Prevent country code in phone number
+	if strings.HasPrefix(phoneNumber, countryCode) {
+		return resterrors.NewBadRequestError(fmt.Sprintf("Phone number should not contain country code (%s)", countryCode), "")
+	}
 	if rr.DeviceId == "" {
 		return resterrors.NewBadRequestError("Please provide device ID", "")
 	}
