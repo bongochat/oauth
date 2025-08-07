@@ -88,6 +88,7 @@ func (s *tokenCreateService) GetToken(request access_token.AccessTokenRequest) (
 		at.AccessToken = token
 		at.CreatedAt = time.Now()
 		at.UpdatedAt = time.Now()
+		at.IsActive = true
 		at.DeviceId = request.DeviceId
 		at.DeviceType = request.DeviceType
 		at.DeviceModel = request.DeviceModel
