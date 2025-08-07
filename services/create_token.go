@@ -34,15 +34,15 @@ func (s *tokenCreateService) CreateToken(request access_token.RegistrationReques
 		return nil, nil, otpErr
 	}
 
-	request.PhoneNumber = request.CountryCode + request.PhoneNumber
+	phoneNumber := request.CountryCode + request.PhoneNumber
 
-	user, err := users.RegisterUser(request.CountryId, request.PhoneNumber, request.Password, request.DeviceId, request.DeviceType, request.DeviceModel, request.IPAddress, request.AppVersion, request.Latitude, request.Longitude)
+	user, err := users.RegisterUser(request.CountryId, phoneNumber, request.Password, request.DeviceId, request.DeviceType, request.DeviceModel, request.IPAddress, request.AppVersion, request.Latitude, request.Longitude)
 	if err != nil {
 		fmt.Println("REGISTRATION ERROR", err)
 		logger.RestErrorLog(err)
 		return nil, nil, err
 	}
-	fmt.Println("USER: ", user.PhoneNumber)
+
 	at := access_token.GetNewAccessToken(user.Id, request.DeviceId)
 	// Generate a new access token:
 	token, _ := at.Generate()
@@ -75,7 +75,9 @@ func (s *tokenCreateService) GetToken(request access_token.AccessTokenRequest) (
 
 	// Authenticate the user against the Users API:
 	if request.GrantType == "password" {
-		user, err := users.LoginUser(request.PhoneNumber, request.Password)
+		fmt.Println(request.PhoneNumber, "request")
+		phoneNumber := request.CountryCode + request.PhoneNumber
+		user, err := users.LoginUser(phoneNumber, request.Password)
 		if err != nil {
 			logger.RestErrorLog(err)
 			return nil, nil, err
@@ -90,11 +92,12 @@ func (s *tokenCreateService) GetToken(request access_token.AccessTokenRequest) (
 		at.DeviceType = request.DeviceType
 		at.DeviceModel = request.DeviceModel
 		at.IPAddress = request.IPAddress
-		at.IsActive = true
 		at.PhoneNumber = request.PhoneNumber
 
+		fmt.Println(at.PhoneNumber, "AT")
+
 		// Save the new access token in MongoDB:
-		result, err := at.GetToken()
+		result, err := at.GetToken(phoneNumber)
 		if err != nil {
 			logger.RestErrorLog(err)
 			return nil, nil, err

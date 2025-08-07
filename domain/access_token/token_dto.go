@@ -120,8 +120,19 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 		return resterrors.NewBadRequestError("Invalid grant type", "")
 	}
 	if at.GrantType == grantTypePassword {
+		if at.CountryCode == "" {
+			return resterrors.NewBadRequestError("Please provide country code", "")
+		}
 		if at.PhoneNumber == "" {
 			return resterrors.NewBadRequestError("Please provide phone number", "")
+		}
+		// Normalize inputs (optional)
+		countryCode := strings.TrimSpace(at.CountryCode)
+		phoneNumber := strings.TrimSpace(at.PhoneNumber)
+
+		// Prevent country code in phone number
+		if strings.HasPrefix(phoneNumber, countryCode) {
+			return resterrors.NewBadRequestError(fmt.Sprintf("Phone number should not contain country code (%s)", countryCode), "")
 		}
 		if at.DeviceId == "" {
 			return resterrors.NewBadRequestError("Please provide device ID", "")

@@ -44,6 +44,7 @@ func (at *AccessToken) TokenMarshall(user *users.User) interface{} {
 	var tokenResponse TokenResponse
 	json.Unmarshal(tokenJson, &tokenResponse)
 	json.Unmarshal(userJson, &tokenResponse)
+	tokenResponse.PhoneNumber = at.PhoneNumber
 	return tokenResponse
 }
 

@@ -52,15 +52,6 @@ func (at *AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 		logger.ErrorLog(err)
 		return nil, resterrors.NewInternalServerError("Failed to retrieve existing document", "", err)
 	}
-	// testPhoneNumber := os.Getenv("TEST_PHONE_NUMBER")
-	// // Determine the isVerified status based on the logic provided
-	// if at.PhoneNumber == testPhoneNumber {
-	// 	at.IsVerified = true
-	// } else if existingToken.IsVerified {
-	// 	at.IsVerified = true
-	// } else {
-	// 	at.IsVerified = false
-	// }
 
 	update := bson.M{
 		"$set": bson.M{
@@ -96,7 +87,7 @@ func (at *AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 	return at, nil
 }
 
-func (at *AccessToken) GetToken() (*AccessToken, resterrors.RestError) {
+func (at *AccessToken) GetToken(phoneNumber string) (*AccessToken, resterrors.RestError) {
 	filter := bson.M{"accesstoken": at.AccessToken}
 
 	// Fetch existing token to check current isVerified status
@@ -108,7 +99,7 @@ func (at *AccessToken) GetToken() (*AccessToken, resterrors.RestError) {
 	}
 	testPhoneNumber := os.Getenv("TEST_PHONE_NUMBER")
 	// Determine the isVerified status based on the logic provided
-	if at.PhoneNumber == testPhoneNumber {
+	if phoneNumber == testPhoneNumber {
 		at.IsVerified = true
 	} else if existingToken.IsVerified {
 		at.IsVerified = true

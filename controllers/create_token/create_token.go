@@ -61,6 +61,9 @@ func GetAccessToken(c *gin.Context) {
 		logger.RestErrorLog(err)
 		return
 	}
+	fmt.Println(request.PhoneNumber)
+	fmt.Println(accessToken.PhoneNumber, "acceess")
+	fmt.Println(user.PhoneNumber, "acceess USER")
 
 	c.JSON(http.StatusOK, gin.H{
 		"result": accessToken.TokenMarshall(user),
