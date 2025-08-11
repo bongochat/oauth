@@ -1,47 +1,59 @@
 package logger
 
 import (
-	"fmt"
 	"log"
+	"os"
+	"path/filepath"
+	"sync"
 
 	"github.com/bongochat/utils/resterrors"
-	"github.com/getsentry/sentry-go"
 )
 
-func InitSentry(dsn string, env string, release string) {
-	err := sentry.Init(sentry.ClientOptions{
-		Dsn:         dsn,
-		Environment: env,
-		Release:     release,
+var (
+	fileLogger  *log.Logger
+	once        sync.Once
+	logFilePath = filepath.Join("logs", "debug.log") // logs/debug.log
+)
+
+// initialize file logger once
+func initFileLogger() {
+	once.Do(func() {
+		// Create logs directory if it doesn't exist
+		if err := os.MkdirAll(filepath.Dir(logFilePath), os.ModePerm); err != nil {
+			log.Fatalf("Failed to create log directory: %v", err)
+		}
+
+		// Open log file in append mode, create if not exists
+		file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatalf("Failed to open log file: %v", err)
+		}
+
+		// Create a new logger instance
+		fileLogger = log.New(file, "", log.LstdFlags|log.Lshortfile)
 	})
-	if err != nil {
-		log.Fatalf("sentry.Init failed: %v", err)
-	}
 }
 
 // InfoLog writes an info message
 func InfoLog(message string) {
-	sentry.CaptureMessage("[INFO] " + message)
+	initFileLogger()
+	fileLogger.Println("[INFO] " + message)
 }
 
 // ErrorMsgLog logs error messages
 func ErrorMsgLog(message string) {
-	sentry.CaptureMessage("[INFO] " + message)
+	initFileLogger()
+	fileLogger.Println("[ERROR] " + message)
 }
 
 // ErrorLog logs error objects
 func ErrorLog(err error) {
-	sentry.CaptureException(err)
+	initFileLogger()
+	fileLogger.Println("[ERROR] ", err)
 }
 
 // RestErrorLog logs custom RestError
 func RestErrorLog(err resterrors.RestError) {
-	fmt.Println("ERROR LOG: ", err)
-	sentry.WithScope(func(scope *sentry.Scope) {
-		scope.SetTag("type", "rest_error")
-		scope.SetExtra("status", err.Status())
-		scope.SetExtra("message", err.Message())
-		scope.SetExtra("error", err.Error())
-		sentry.CaptureException(err)
-	})
+	initFileLogger()
+	fileLogger.Println("[ERROR] ", err)
 }
