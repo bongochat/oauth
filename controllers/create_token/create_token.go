@@ -30,7 +30,6 @@ func CreateAccessToken(c *gin.Context) {
 		logger.RestErrorLog(restErr)
 		return
 	}
-	fmt.Println(request.PhoneNumber)
 
 	accessToken, user, err := services.TokenCreateService.CreateToken(request, clientToken)
 	if err != nil {

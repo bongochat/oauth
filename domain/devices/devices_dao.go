@@ -9,10 +9,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (r Devices) DeviceList(userId int64) ([]Devices, resterrors.RestError) {
+func (r Devices) DeviceList(accountNumber int64) ([]Devices, resterrors.RestError) {
 	result := make([]Devices, 0)
 
-	filter := bson.M{"userid": userId}
+	filter := bson.M{"accountnumber": accountNumber}
 	cursor, err := mongodb.GetCollections().Find(context.Background(), filter)
 	if err != nil {
 		logger.ErrorLog(err)

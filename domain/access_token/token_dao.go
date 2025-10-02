@@ -55,17 +55,17 @@ func (at *AccessToken) CreateToken() (*AccessToken, resterrors.RestError) {
 
 	update := bson.M{
 		"$set": bson.M{
-			"userid":       at.UserId,
-			"clientid":     at.ClientId,
-			"clientsecret": at.ClientSecret,
-			"deviceid":     at.DeviceId,
-			"devicetype":   at.DeviceType,
-			"devicemodel":  at.DeviceModel,
-			"ipaddress":    at.IPAddress,
-			"isactive":     at.IsActive,
-			"isverified":   at.IsVerified,
-			"datecreated":  at.CreatedAt,
-			"dateupdated":  at.UpdatedAt,
+			"accountnumber": at.AccountNumber,
+			"clientid":      at.ClientId,
+			"clientsecret":  at.ClientSecret,
+			"deviceid":      at.DeviceId,
+			"devicetype":    at.DeviceType,
+			"devicemodel":   at.DeviceModel,
+			"ipaddress":     at.IPAddress,
+			"isactive":      at.IsActive,
+			"isverified":    at.IsVerified,
+			"datecreated":   at.CreatedAt,
+			"dateupdated":   at.UpdatedAt,
 		},
 	}
 
@@ -109,17 +109,17 @@ func (at *AccessToken) GetToken(phoneNumber string) (*AccessToken, resterrors.Re
 
 	update := bson.M{
 		"$set": bson.M{
-			"userid":       at.UserId,
-			"clientid":     at.ClientId,
-			"clientsecret": at.ClientSecret,
-			"deviceid":     at.DeviceId,
-			"devicetype":   at.DeviceType,
-			"devicemodel":  at.DeviceModel,
-			"ipaddress":    at.IPAddress,
-			"isactive":     at.IsActive,
-			"isverified":   at.IsVerified,
-			"datecreated":  at.CreatedAt,
-			"dateupdated":  at.UpdatedAt,
+			"accountnumber": at.AccountNumber,
+			"clientid":      at.ClientId,
+			"clientsecret":  at.ClientSecret,
+			"deviceid":      at.DeviceId,
+			"devicetype":    at.DeviceType,
+			"devicemodel":   at.DeviceModel,
+			"ipaddress":     at.IPAddress,
+			"isactive":      at.IsActive,
+			"isverified":    at.IsVerified,
+			"datecreated":   at.CreatedAt,
+			"dateupdated":   at.UpdatedAt,
 		},
 	}
 
@@ -145,17 +145,17 @@ func (at *AccessToken) CreateClientToken() (*AccessToken, resterrors.RestError) 
 	filter := bson.M{"accesstoken": at.AccessToken}
 	update := bson.M{
 		"$set": bson.M{
-			"userid":       at.UserId,
-			"clientid":     at.ClientId,
-			"clientsecret": at.ClientSecret,
-			"deviceid":     at.DeviceId,
-			"devicetype":   at.DeviceType,
-			"devicemodel":  at.DeviceModel,
-			"ipaddress":    at.IPAddress,
-			"isactive":     at.IsActive,
-			"isverified":   at.IsVerified,
-			"datecreated":  at.CreatedAt,
-			"dateupdated":  at.UpdatedAt,
+			"accountnumber": at.AccountNumber,
+			"clientid":      at.ClientId,
+			"clientsecret":  at.ClientSecret,
+			"deviceid":      at.DeviceId,
+			"devicetype":    at.DeviceType,
+			"devicemodel":   at.DeviceModel,
+			"ipaddress":     at.IPAddress,
+			"isactive":      at.IsActive,
+			"isverified":    at.IsVerified,
+			"datecreated":   at.CreatedAt,
+			"dateupdated":   at.UpdatedAt,
 		},
 	}
 	options := options.Update().SetUpsert(true)

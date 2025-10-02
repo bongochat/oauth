@@ -13,10 +13,10 @@ import (
 
 type User struct {
 	Id            int64  `json:"id"`
+	AccountNumber int64  `json:"account_number"`
 	CountryId     int8   `json:"country_id"`
 	CountryCode   string `json:"country_code"`
 	PhoneNumber   string `json:"phone_number"`
-	AccountNumber string `json:"account_number"`
 	DateCreated   string `json:"date_created"`
 	IsActive      bool   `json:"is_active"`
 }

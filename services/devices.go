@@ -18,7 +18,7 @@ type deviceListServiceInterface interface {
 	DeviceList(int64, string) ([]devices.Devices, resterrors.RestError)
 }
 
-func (service *deviceListService) DeviceList(userId int64, tokenId string) ([]devices.Devices, resterrors.RestError) {
+func (service *deviceListService) DeviceList(accountNumber int64, tokenId string) ([]devices.Devices, resterrors.RestError) {
 	devices := &devices.Devices{}
 	accessTokenId := strings.TrimSpace(tokenId)
 	if len(accessTokenId) == 0 {
@@ -30,7 +30,7 @@ func (service *deviceListService) DeviceList(userId int64, tokenId string) ([]de
 		logger.RestErrorLog(err)
 		return nil, err
 	}
-	deviceList, err := devices.DeviceList(userId)
+	deviceList, err := devices.DeviceList(accountNumber)
 	if err != nil {
 		logger.RestErrorLog(err)
 		return nil, err

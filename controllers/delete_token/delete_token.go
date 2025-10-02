@@ -32,7 +32,7 @@ func DeleteAccessToken(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Logout successfully.",
+		"message": "Device Logout successfully.",
 		"status":  http.StatusOK,
 	})
 }

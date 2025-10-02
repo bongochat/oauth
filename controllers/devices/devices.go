@@ -19,14 +19,14 @@ func DeviceList(c *gin.Context) {
 		logger.RestErrorLog(restErr)
 		return
 	}
-	userId, userIdErr := utils.GetUserID(c.Param("user_id"))
+	accountNumber, userIdErr := utils.ValidateAccountNumber(c.Param("account_number"))
 	if userIdErr != nil {
 		c.JSON(userIdErr.Status(), userIdErr)
 		logger.RestErrorLog(userIdErr)
 		return
 	}
 	accessTokenId := accessTokenString[len("Bearer "):]
-	devices, err := services.DeviceListService.DeviceList(userId, accessTokenId)
+	devices, err := services.DeviceListService.DeviceList(accountNumber, accessTokenId)
 	if err != nil {
 		c.JSON(err.Status(), err)
 		logger.RestErrorLog(err)

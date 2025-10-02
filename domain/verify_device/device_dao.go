@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (r VerifyDevice) VerifyDevice(userId int64, token string) (*VerifyDevice, resterrors.RestError) {
+func (r VerifyDevice) VerifyDevice(accountNumber int64, token string) (*VerifyDevice, resterrors.RestError) {
 	var result VerifyDevice
 	err := access_token.VerifyTokenString(token)
 	if err != nil {

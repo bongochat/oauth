@@ -43,7 +43,7 @@ func (s *tokenCreateService) CreateToken(request access_token.RegistrationReques
 		return nil, nil, err
 	}
 
-	at := access_token.GetNewAccessToken(user.Id, request.DeviceId)
+	at := access_token.GetNewAccessToken(user.AccountNumber, request.DeviceId)
 	// Generate a new access token:
 	token, _ := at.Generate()
 	at.AccessToken = token
@@ -82,7 +82,7 @@ func (s *tokenCreateService) GetToken(request access_token.AccessTokenRequest) (
 			logger.RestErrorLog(err)
 			return nil, nil, err
 		}
-		at := access_token.GetNewAccessToken(user.Id, request.DeviceId)
+		at := access_token.GetNewAccessToken(user.AccountNumber, request.DeviceId)
 		// Generate a new access token:
 		token, _ := at.Generate()
 		at.AccessToken = token
@@ -94,8 +94,6 @@ func (s *tokenCreateService) GetToken(request access_token.AccessTokenRequest) (
 		at.DeviceModel = request.DeviceModel
 		at.IPAddress = request.IPAddress
 		at.PhoneNumber = request.PhoneNumber
-
-		fmt.Println(at.PhoneNumber, "AT")
 
 		// Save the new access token in MongoDB:
 		result, err := at.GetToken(phoneNumber)

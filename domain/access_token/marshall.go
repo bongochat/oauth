@@ -9,18 +9,18 @@ import (
 )
 
 type TokenResponse struct {
-	AccessToken string    `json:"access_token"`
-	UserId      int64     `json:"user_id"`
-	ClientId    string    `json:"client_id"`
-	CountryId   int8      `json:"country_id"`
-	CountryCode string    `json:"country_code"`
-	PhoneNumber string    `json:"phone_number"`
-	DeviceId    string    `json:"device_id"`
-	IsVerified  bool      `json:"is_verified"`
-	IsActive    bool      `json:"is_active"`
-	IPAddress   net.IP    `json:"ip_address"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	AccessToken   string    `json:"access_token"`
+	AccountNumber int64     `json:"account_number"`
+	ClientId      string    `json:"client_id"`
+	CountryId     int8      `json:"country_id"`
+	CountryCode   string    `json:"country_code"`
+	PhoneNumber   string    `json:"phone_number"`
+	DeviceId      string    `json:"device_id"`
+	IsVerified    bool      `json:"is_verified"`
+	IsActive      bool      `json:"is_active"`
+	IPAddress     net.IP    `json:"ip_address"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type ClientTokenResponse struct {

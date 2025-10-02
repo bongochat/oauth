@@ -18,7 +18,7 @@ type deviceServiceInterface interface {
 	VerifyDevice(int64, string) (*verify_device.VerifyDevice, resterrors.RestError)
 }
 
-func (service *deviceService) VerifyDevice(userId int64, tokenId string) (*verify_device.VerifyDevice, resterrors.RestError) {
+func (service *deviceService) VerifyDevice(accountNumber int64, tokenId string) (*verify_device.VerifyDevice, resterrors.RestError) {
 	vd := &verify_device.VerifyDevice{}
 	accessTokenId := strings.TrimSpace(tokenId)
 	if len(accessTokenId) == 0 {
@@ -30,7 +30,7 @@ func (service *deviceService) VerifyDevice(userId int64, tokenId string) (*verif
 		logger.RestErrorLog(err)
 		return nil, err
 	}
-	accessToken, err := vd.VerifyDevice(userId, tokenId)
+	accessToken, err := vd.VerifyDevice(accountNumber, tokenId)
 	if err != nil {
 		logger.RestErrorLog(err)
 		return nil, err

@@ -17,19 +17,19 @@ const (
 )
 
 type AccessToken struct {
-	AccessToken  string    `json:"access_token" bson:"accesstoken"`
-	UserId       int64     `json:"user_id" bson:"userid"`
-	PhoneNumber  string    `json:"phone_number" bson:"phonenumber"`
-	ClientId     string    `json:"client_id,omitempty" bson:"clientid,omitempty"`
-	ClientSecret string    `json:"client_secret,omitempty" bson:"clientsecret,omitempty"`
-	DeviceId     string    `json:"device_id" bson:"deviceid"`
-	DeviceType   string    `json:"device_type" bson:"devicetype"`
-	DeviceModel  string    `json:"device_model" bson:"devicemodel"`
-	IPAddress    net.IP    `json:"ip_address" bson:"ipaddress"`
-	IsVerified   bool      `json:"is_verified" bson:"isverified"`
-	IsActive     bool      `json:"is_active" bson:"isactive"`
-	CreatedAt    time.Time `json:"created_at" bson:"datecreated"`
-	UpdatedAt    time.Time `json:"updated_at" bson:"dateupdated"`
+	AccessToken   string    `json:"access_token" bson:"accesstoken"`
+	AccountNumber int64     `json:"account_number"`
+	PhoneNumber   string    `json:"phone_number" bson:"phonenumber"`
+	ClientId      string    `json:"client_id,omitempty" bson:"clientid,omitempty"`
+	ClientSecret  string    `json:"client_secret,omitempty" bson:"clientsecret,omitempty"`
+	DeviceId      string    `json:"device_id" bson:"deviceid"`
+	DeviceType    string    `json:"device_type" bson:"devicetype"`
+	DeviceModel   string    `json:"device_model" bson:"devicemodel"`
+	IPAddress     net.IP    `json:"ip_address" bson:"ipaddress"`
+	IsVerified    bool      `json:"is_verified" bson:"isverified"`
+	IsActive      bool      `json:"is_active" bson:"isactive"`
+	CreatedAt     time.Time `json:"created_at" bson:"datecreated"`
+	UpdatedAt     time.Time `json:"updated_at" bson:"dateupdated"`
 }
 
 type AccessTokenRequest struct {
@@ -150,10 +150,10 @@ func (at *AccessTokenRequest) Validate() resterrors.RestError {
 	return nil
 }
 
-func GetNewAccessToken(userId int64, deviceId string) AccessToken {
+func GetNewAccessToken(accountNumber int64, deviceId string) AccessToken {
 	return AccessToken{
-		UserId:   userId,
-		DeviceId: deviceId,
+		AccountNumber: accountNumber,
+		DeviceId:      deviceId,
 	}
 }
 
@@ -169,8 +169,8 @@ var secretKey = []byte("secret-key")
 func (at *AccessToken) Generate() (string, resterrors.RestError) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"user_id":   at.UserId,
-			"device_id": at.DeviceId,
+			"account_number": at.AccountNumber,
+			"device_id":      at.DeviceId,
 		})
 
 	tokenString, err := token.SignedString(secretKey)
