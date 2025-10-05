@@ -18,10 +18,10 @@ func VerifyDevice(c *gin.Context) {
 		logger.RestErrorLog(restErr)
 		return
 	}
-	accountNumber, userIdErr := utils.ValidateAccountNumber(c.Param("account_number"))
-	if userIdErr != nil {
-		c.JSON(userIdErr.Status(), userIdErr)
-		logger.RestErrorLog(userIdErr)
+	accountNumber, accountNumberErr := utils.ValidateAccountNumber(c.Param("account_number"))
+	if accountNumberErr != nil {
+		c.JSON(accountNumberErr.Status(), accountNumberErr)
+		logger.RestErrorLog(accountNumberErr)
 		return
 	}
 	accessTokenId := accessTokenString[len("Bearer "):]
